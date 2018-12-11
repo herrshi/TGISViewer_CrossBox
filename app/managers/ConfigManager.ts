@@ -1,13 +1,23 @@
 export class ConfigManager {
   private static instance: ConfigManager;
 
-  private constructor(configFile: string) {
+  private configFile: string;
 
+  public appConfig: any;
+
+  private constructor() {
   }
 
-  static getInstance(configFile: string): ConfigManager {
+  public async loadConfig(configFile: string) {
+    this.configFile = configFile;
+
+    const response = await fetch(this.configFile);
+    return await response.json();
+  }
+
+  static getInstance(): ConfigManager {
     if (!this.instance) {
-      this.instance = new ConfigManager(configFile);
+      this.instance = new ConfigManager();
     }
     return this.instance;
   }

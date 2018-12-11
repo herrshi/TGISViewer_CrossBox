@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/arcgis-js-api": "^4.9.0",
-    "@types/superagent": "^3.8.5",
-    "superagent": "^4.0.0"
+    "@types/arcgis-js-api": "^4.9.0"
   }
 }

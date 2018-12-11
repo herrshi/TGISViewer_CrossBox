@@ -28,7 +28,11 @@
 </head>
 <body>
   <div id="viewDiv"></div>
-  <script>require(["app/main"]);</script>
+  <script>
+    require(["app/main.js"], function (main) {
+      let map = new main.Map({config: "projects/config.json"});
+    });
+  </script>
 
 </body>
 </html>
