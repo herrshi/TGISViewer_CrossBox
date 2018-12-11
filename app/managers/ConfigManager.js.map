@@ -1,0 +1,1 @@
+{"version":3,"file":"ConfigManager.js","sourceRoot":"","sources":["ConfigManager.ts"],"names":[],"mappings":";;;IAAA;QAGE,uBAAoB,UAAkB;QAEtC,CAAC;QAEM,yBAAW,GAAlB,UAAmB,UAAkB;YACnC,IAAI,CAAC,IAAI,CAAC,QAAQ,EAAE;gBAClB,IAAI,CAAC,QAAQ,GAAG,IAAI,aAAa,CAAC,UAAU,CAAC,CAAC;aAC/C;YACD,OAAO,IAAI,CAAC,QAAQ,CAAC;QACvB,CAAC;QACH,oBAAC;IAAD,CAAC,AAbD,IAaC;IAbY,sCAAa"}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+  <title>ArcGIS JSAPI 4.9 TypeScript Demo</title>
+  <style>
+    html, body, #viewDiv {
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <link rel="stylesheet" href="http://localhost:8090/arcgis_js_api/library/4.9/esri/css/main.css">
+  <script>
+    const locationPath = location.pathname.replace(/\/[^\/]+$/, "");
+    window.dojoConfig = {
+      packages: [
+        {
+          name: "app",
+          location: locationPath + "/app"
+        }
+      ]
+    }
+  </script>
+  <script src="http://localhost:8090/arcgis_js_api/library/4.9/init.js"></script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <script>require(["app/main"]);</script>
+
+</body>
+</html>
