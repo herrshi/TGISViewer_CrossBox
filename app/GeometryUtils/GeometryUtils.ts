@@ -19,7 +19,8 @@ export default class GeometryUtils {
     length: number
   ): Promise<Array<Array<number>>> {
     return new Promise<Array<Array<number>>>(resolve => {
-      //先计算总长度，总长度小于切割长度，返回整条折线
+      //先计算总长度
+      //若总长度小于切割长度，则返回整条折线
       let polyline: Polyline = new Polyline({
         paths: [line]
       });
@@ -40,7 +41,7 @@ export default class GeometryUtils {
         });
         const segLength: number = geometryEngine.geodesicLength(
           segment,
-          "meters"
+          this.UNIT
         );
 
         if (segLength > length) {
@@ -59,7 +60,7 @@ export default class GeometryUtils {
       x: segment.paths[0][0][0],
       y: segment.paths[0][0][1]
     });
-    //从线段起点为原型，切割长度为半径开始画圆
+    //从线段起点为圆心，切割长度为半径开始画圆
     const bufferPolygon: Polygon = geometryEngine.geodesicBuffer(
       center,
       length,

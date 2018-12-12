@@ -13,7 +13,7 @@ class Map {
     const configManager: ConfigManager = ConfigManager.getInstance();
     await configManager.loadConfig(this.params.config);
     const mapManager: MapManager = MapManager.getInstance();
-    await mapManager.showMap(configManager.appConfig, this.params.container);
+    return await mapManager.showMap(configManager.appConfig, this.params.container);
   }
 
   public async clipLineInLength(line: Array<Array<number>>, length: number) {

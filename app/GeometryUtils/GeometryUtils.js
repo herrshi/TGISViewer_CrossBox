@@ -51,7 +51,8 @@ define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Poi
                 var _this = this;
                 return __generator(this, function (_a) {
                     return [2 /*return*/, new Promise(function (resolve) {
-                            //先计算总长度，总长度小于切割长度，返回整条折线
+                            //先计算总长度
+                            //若总长度小于切割长度，则返回整条折线
                             var polyline = new Polyline({
                                 paths: [line]
                             });
@@ -65,7 +66,7 @@ define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Poi
                                 var segment = new Polyline({
                                     paths: [[line[i], line[i + 1]]]
                                 });
-                                var segLength = geometryEngine.geodesicLength(segment, "meters");
+                                var segLength = geometryEngine.geodesicLength(segment, _this.UNIT);
                                 if (segLength > length) {
                                     result.push(_this.clipSegment(segment, length));
                                     resolve(result);
@@ -84,7 +85,7 @@ define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Poi
                 x: segment.paths[0][0][0],
                 y: segment.paths[0][0][1]
             });
-            //从线段起点为原型，切割长度为半径开始画圆
+            //从线段起点为圆心，切割长度为半径开始画圆
             var bufferPolygon = geometryEngine.geodesicBuffer(center, length, this.UNIT);
             //线段和圆相交部分即切割后的线段
             var interPolyline = geometryEngine.intersect(segment, bufferPolygon);

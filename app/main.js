@@ -52,9 +52,7 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
                             _a.sent();
                             mapManager = MapManager_1.MapManager.getInstance();
                             return [4 /*yield*/, mapManager.showMap(configManager.appConfig, this.params.container)];
-                        case 2:
-                            _a.sent();
-                            return [2 /*return*/];
+                        case 2: return [2 /*return*/, _a.sent()];
                     }
                 });
             });

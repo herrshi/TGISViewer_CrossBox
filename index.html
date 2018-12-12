@@ -51,9 +51,6 @@
     map = new main.Map({config: "projects/config.json", container: "viewDiv"});
     map.createMap().then(async () => {
       console.log("map create finish.");
-      // map.clipLineInLength([[121.429224, 31.157192], [121.428494, 31.156434]], 50).then(result => {
-      //   console.log(result);
-      // });
       const result = await map.clipLineInLength([[121.429224, 31.157192], [121.428494, 31.156434]], 50);
       console.log(result);
     });
