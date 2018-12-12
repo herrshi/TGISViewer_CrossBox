@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "app/widgets/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, CameraInfo) {
+define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "app/widgets/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, CameraInfo) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MapManager = /** @class */ (function () {
@@ -52,20 +52,29 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 var layer;
                                 switch (baseLayerConfig.type) {
                                     case "tile":
-                                        layer = new TileLayer({
-                                            url: baseLayerConfig.url,
-                                            visible: !!baseLayerConfig.visible || true
-                                        });
+                                        //Constructors参数中不能含有type
+                                        delete baseLayerConfig.type;
+                                        layer = new TileLayer(baseLayerConfig);
                                         break;
                                 }
                                 return layer;
                             });
-                            optLayers = appConfig.map.operationallayers.map(function (optLayerConfig) { });
+                            optLayers = appConfig.map.operationallayers.map(function (optLayerConfig) {
+                                var layer;
+                                switch (optLayerConfig.type) {
+                                    case "map-image":
+                                        delete optLayerConfig.type;
+                                        layer = new MapImageLayer(optLayerConfig);
+                                        break;
+                                }
+                                return layer;
+                            });
                             basemap = new Basemap({
                                 baseLayers: baseLayers
                             });
                             map = new EsriMap({
                                 basemap: basemap,
+                                layers: optLayers
                             });
                             view = new SceneView({
                                 container: this.containerDiv,

@@ -3,7 +3,8 @@ import Basemap = require("esri/Basemap");
 import SceneView = require("esri/views/SceneView");
 import Layer = require("esri/layers/Layer");
 import TileLayer = require("esri/layers/TileLayer");
-import esriConfig = require("esri/config");
+import MapImageLayer = require("esri/layers/MapImageLayer");
+
 import CameraInfo = require("app/widgets/CameraInfo");
 
 export class MapManager {
@@ -23,10 +24,9 @@ export class MapManager {
         let layer: Layer;
         switch (baseLayerConfig.type) {
           case "tile":
-            layer = new TileLayer({
-              url: baseLayerConfig.url,
-              visible: !!baseLayerConfig.visible || true
-            });
+            //Constructors参数中不能含有type
+            delete baseLayerConfig.type;
+            layer = new TileLayer(baseLayerConfig);
             break;
         }
         return layer;
@@ -35,7 +35,16 @@ export class MapManager {
 
     //读取业务图层
     const optLayers: Array<Layer> = appConfig.map.operationallayers.map(
-      (optLayerConfig: any) => {}
+      (optLayerConfig: any) => {
+        let layer: Layer;
+        switch (optLayerConfig.type) {
+          case "map-image":
+            delete optLayerConfig.type;
+            layer = new MapImageLayer(optLayerConfig);
+            break;
+        }
+        return layer;
+      }
     );
 
     const basemap = new Basemap({
@@ -43,7 +52,7 @@ export class MapManager {
     });
     const map = new EsriMap({
       basemap: basemap,
-      // layers: optLayers
+      layers: optLayers
     });
     const view = new SceneView({
       container: this.containerDiv,
