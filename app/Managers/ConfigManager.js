@@ -41,33 +41,17 @@ define(["require", "exports"], function (require, exports) {
         }
         ConfigManager.prototype.loadConfig = function (configFile) {
             return __awaiter(this, void 0, void 0, function () {
-                var response;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var response, _a;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0: return [4 /*yield*/, fetch(configFile)];
                         case 1:
-                            response = _a.sent();
-                            return [4 /*yield*/, response.json().then(function (appConfig) {
-                                    _this.appConfig = appConfig;
-                                })
-                                // return new Promise(((resolve, reject) => {
-                                //   response.json().then(appConfig => {
-                                //     this.appConfig = appConfig;
-                                //     resolve(appConfig);
-                                //   });
-                                // }))
-                                // return await response.json();
-                            ];
-                        case 2: return [2 /*return*/, _a.sent()
-                            // return new Promise(((resolve, reject) => {
-                            //   response.json().then(appConfig => {
-                            //     this.appConfig = appConfig;
-                            //     resolve(appConfig);
-                            //   });
-                            // }))
-                            // return await response.json();
-                        ];
+                            response = _b.sent();
+                            _a = this;
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            _a.appConfig = _b.sent();
+                            return [2 /*return*/];
                     }
                 });
             });

@@ -4,17 +4,12 @@
       {
         "title": "底图",
         "type": "tile",
-        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_base/MapServer",
+        "url": "https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
         "visible": true
       }
     ],
     "operationallayers": [
-      {
-        "title": "路口",
-        "type": "map-image",
-        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
-        "visible": true
-      }
+
     ],
     "camera": {
       "heading": 0,

@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/managers/ConfigManager", "app/managers/MapManager"], function (require, exports, ConfigManager_1, MapManager_1) {
+define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, ConfigManager_1, MapManager_1, GeometryUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Map = /** @class */ (function () {
@@ -52,7 +52,19 @@ define(["require", "exports", "app/managers/ConfigManager", "app/managers/MapMan
                             _a.sent();
                             mapManager = MapManager_1.MapManager.getInstance();
                             return [4 /*yield*/, mapManager.showMap(configManager.appConfig, this.params.container)];
-                        case 2: return [2 /*return*/, _a.sent()];
+                        case 2:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        Map.prototype.clipLineInLength = function (line, length) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(line, length)];
+                        case 1: return [2 /*return*/, _a.sent()];
                     }
                 });
             });

@@ -4,8 +4,10 @@ import SceneView = require("esri/views/SceneView");
 import Layer = require("esri/layers/Layer");
 import TileLayer = require("esri/layers/TileLayer");
 import MapImageLayer = require("esri/layers/MapImageLayer");
+import Home = require("esri/widgets/Home");
 
-import CameraInfo = require("app/widgets/CameraInfo");
+
+import CameraInfo = require("app/Widgets/CameraInfo/CameraInfo");
 
 export class MapManager {
   private static instance: MapManager;
@@ -62,12 +64,30 @@ export class MapManager {
     });
 
     return await view.when(function() {
+      //UI
       view.ui.remove("attribution");
+      view.ui.remove("navigation-toggle");
 
-      const cameraInfo: CameraInfo = new CameraInfo({
+      const homeWidget: Home = new Home({
         view: view
       });
-      view.ui.add(cameraInfo, "top-right");
+
+      const cameraInfoWidget: CameraInfo = new CameraInfo({
+        view: view
+      });
+
+      view.ui.add([
+        {
+          component: homeWidget,
+          position: "top-left",
+          index: 1,
+        },
+        {
+          component: cameraInfoWidget,
+          position: "top-right",
+          index: 0,
+        }
+      ]);
 
       console.timeEnd("Load Map");
     });

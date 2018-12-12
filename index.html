@@ -43,15 +43,19 @@
   <script src="http://localhost:8090/arcgis_js_api/library/4.9/init.js"></script>
 </head>
 <body>
-  <div id="viewDiv"></div>
-  <script>
-    require(["app/main.js"], function (main) {
-      let map = new main.Map({config: "projects/config.json", container: "viewDiv"});
-      map.createMap().then(() => {
-        console.log("map create finish.");
+<div id="viewDiv"></div>
+<script>
+  require(["app/main.js"], function (main) {
+    let map = new main.Map({config: "projects/config.json", container: "viewDiv"});
+
+    map.createMap().then(() => {
+      console.log("map create finish.");
+      map.clipLineInLength([[121.429224, 31.157192], [121.428494, 31.156434]], 50).then(result => {
+        console.log(result);
       });
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>

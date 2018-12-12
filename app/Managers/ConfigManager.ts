@@ -7,16 +7,7 @@ export class ConfigManager {
 
   public async loadConfig(configFile: string) {
     const response = await fetch(configFile);
-    return await response.json().then((appConfig: any) => {
-      this.appConfig = appConfig;
-    })
-    // return new Promise(((resolve, reject) => {
-    //   response.json().then(appConfig => {
-    //     this.appConfig = appConfig;
-    //     resolve(appConfig);
-    //   });
-    // }))
-    // return await response.json();
+    this.appConfig = await response.json();
   }
 
   static getInstance(): ConfigManager {

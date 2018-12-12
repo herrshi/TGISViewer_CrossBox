@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "app/widgets/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, CameraInfo) {
+define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "esri/widgets/Home", "app/Widgets/CameraInfo/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, Home, CameraInfo) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MapManager = /** @class */ (function () {
@@ -83,11 +83,27 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 camera: this.appConfig.map.camera
                             });
                             return [4 /*yield*/, view.when(function () {
+                                    //UI
                                     view.ui.remove("attribution");
-                                    var cameraInfo = new CameraInfo({
+                                    view.ui.remove("navigation-toggle");
+                                    var homeWidget = new Home({
                                         view: view
                                     });
-                                    view.ui.add(cameraInfo, "top-right");
+                                    var cameraInfoWidget = new CameraInfo({
+                                        view: view
+                                    });
+                                    view.ui.add([
+                                        {
+                                            component: homeWidget,
+                                            position: "top-left",
+                                            index: 1,
+                                        },
+                                        {
+                                            component: cameraInfoWidget,
+                                            position: "top-right",
+                                            index: 0,
+                                        }
+                                    ]);
                                     console.timeEnd("Load Map");
                                 })];
                         case 1: return [2 /*return*/, _a.sent()];
