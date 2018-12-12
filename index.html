@@ -11,6 +11,22 @@
       padding: 0;
       margin: 0;
     }
+
+    .recenter-tool, .camera-info-tool {
+      padding: 2em;
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      width: 150px;
+      /*height: 50px;*/
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .recenter-tool > p, .camera-info-tool > p {
+      margin: 0;
+    }
   </style>
   <link rel="stylesheet" href="http://localhost:8090/arcgis_js_api/library/4.9/esri/css/main.css">
   <script>
@@ -30,7 +46,10 @@
   <div id="viewDiv"></div>
   <script>
     require(["app/main.js"], function (main) {
-      let map = new main.Map({config: "projects/config.json"});
+      let map = new main.Map({config: "projects/config.json", container: "viewDiv"});
+      map.createMap().then(() => {
+        console.log("map create finish.");
+      });
     });
   </script>
 

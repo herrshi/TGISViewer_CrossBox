@@ -33,53 +33,67 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "app/widgets/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, CameraInfo) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var ConfigManager = /** @class */ (function () {
-        function ConfigManager() {
+    var MapManager = /** @class */ (function () {
+        function MapManager() {
         }
-        ConfigManager.prototype.loadConfig = function (configFile) {
+        MapManager.prototype.showMap = function (appConfig, div) {
             return __awaiter(this, void 0, void 0, function () {
-                var response;
-                var _this = this;
+                var baseLayers, optLayers, basemap, map, view;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, fetch(configFile)];
-                        case 1:
-                            response = _a.sent();
-                            return [4 /*yield*/, response.json().then(function (appConfig) {
-                                    _this.appConfig = appConfig;
-                                })
-                                // return new Promise(((resolve, reject) => {
-                                //   response.json().then(appConfig => {
-                                //     this.appConfig = appConfig;
-                                //     resolve(appConfig);
-                                //   });
-                                // }))
-                                // return await response.json();
-                            ];
-                        case 2: return [2 /*return*/, _a.sent()
-                            // return new Promise(((resolve, reject) => {
-                            //   response.json().then(appConfig => {
-                            //     this.appConfig = appConfig;
-                            //     resolve(appConfig);
-                            //   });
-                            // }))
-                            // return await response.json();
-                        ];
+                        case 0:
+                            console.time("Load Map");
+                            this.appConfig = appConfig;
+                            this.containerDiv = div;
+                            baseLayers = appConfig.map.basemaps.map(function (baseLayerConfig) {
+                                var layer;
+                                switch (baseLayerConfig.type) {
+                                    case "tile":
+                                        layer = new TileLayer({
+                                            url: baseLayerConfig.url,
+                                            visible: !!baseLayerConfig.visible || true
+                                        });
+                                        break;
+                                }
+                                return layer;
+                            });
+                            optLayers = appConfig.map.operationallayers.map(function (optLayerConfig) { });
+                            basemap = new Basemap({
+                                baseLayers: baseLayers
+                            });
+                            map = new EsriMap({
+                                basemap: basemap,
+                            });
+                            view = new SceneView({
+                                container: this.containerDiv,
+                                map: map,
+                                viewingMode: "local",
+                                camera: this.appConfig.map.camera
+                            });
+                            return [4 /*yield*/, view.when(function () {
+                                    view.ui.remove("attribution");
+                                    var cameraInfo = new CameraInfo({
+                                        view: view
+                                    });
+                                    view.ui.add(cameraInfo, "top-right");
+                                    console.timeEnd("Load Map");
+                                })];
+                        case 1: return [2 /*return*/, _a.sent()];
                     }
                 });
             });
         };
-        ConfigManager.getInstance = function () {
+        MapManager.getInstance = function () {
             if (!this.instance) {
-                this.instance = new ConfigManager();
+                this.instance = new MapManager();
             }
             return this.instance;
         };
-        return ConfigManager;
+        return MapManager;
     }());
-    exports.ConfigManager = ConfigManager;
+    exports.MapManager = MapManager;
 });
-//# sourceMappingURL=ConfigManager.js.map
+//# sourceMappingURL=MapManager.js.map

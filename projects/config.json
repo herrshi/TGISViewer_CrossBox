@@ -1,7 +1,29 @@
 {
   "map": {
     "basemaps": [
-
-    ]
+      {
+        "title": "底图",
+        "type": "tile",
+        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_base/MapServer",
+        "visible": true
+      }
+    ],
+    "operationallayers": [
+      {
+        "title": "路口",
+        "type": "map-image",
+        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
+        "visible": true
+      }
+    ],
+    "camera": {
+      "heading": 0,
+      "tilt": 30,
+      "position": {
+        "latitude": 31.141,
+        "longitude": 121.430322,
+        "z": 3000
+      }
+    }
   }
 }
