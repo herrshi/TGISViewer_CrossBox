@@ -12,45 +12,45 @@ export default class GeometryUtils {
    * 指定长度大于折线长度时，返回折线
    * @param line: 要切割的折线
    * @param length: 切割长度
-   * @return 切割后的折线
+   * @return Promise<切割后的折线>
    * */
-  public static clipPolylineInLength(
+  public static async clipPolylineInLength(
     line: Array<Array<number>>,
     length: number
-  ): Array<Array<number>> {
-    let polyline: Polyline = new Polyline({
-      paths: [line]
-    });
-    const totalLength: number = geometryEngine.geodesicLength(
-      polyline,
-      this.UNIT
-    );
-    console.log(totalLength, length);
-    //总长度小于切割长度，返回整条折线
-    if (totalLength < length) {
-      return line;
-    }
-
-    let result: Array<Array<number>> = [];
-    for (let i = 0; i < line.length - 1; i++) {
-      result.push(line[i]);
-
-      const segment: Polyline = new Polyline({
-        paths: [[line[i], line[i + 1]]]
+  ): Promise<Array<Array<number>>> {
+    return new Promise<Array<Array<number>>>(resolve => {
+      //先计算总长度，总长度小于切割长度，返回整条折线
+      let polyline: Polyline = new Polyline({
+        paths: [line]
       });
-      const segLength: number = geometryEngine.geodesicLength(
-        segment,
-        "meters"
+      const totalLength: number = geometryEngine.geodesicLength(
+        polyline,
+        this.UNIT
       );
-
-
-      if (segLength > length) {
-        result.push(this.clipSegment(segment, length));
-        return result;
-      } else {
-        length -= segLength;
+      if (totalLength < length) {
+        resolve(line);
       }
-    }
+
+      let result: Array<Array<number>> = [];
+      for (let i = 0; i < line.length - 1; i++) {
+        result.push(line[i]);
+
+        const segment: Polyline = new Polyline({
+          paths: [[line[i], line[i + 1]]]
+        });
+        const segLength: number = geometryEngine.geodesicLength(
+          segment,
+          "meters"
+        );
+
+        if (segLength > length) {
+          result.push(this.clipSegment(segment, length));
+          resolve(result);
+        } else {
+          length -= segLength;
+        }
+      }
+    });
   }
 
   private static clipSegment(segment: Polyline, length: number): Array<number> {
