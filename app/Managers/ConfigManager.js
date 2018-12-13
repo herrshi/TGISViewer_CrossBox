@@ -64,6 +64,6 @@ define(["require", "exports"], function (require, exports) {
         };
         return ConfigManager;
     }());
-    exports.ConfigManager = ConfigManager;
+    exports.default = ConfigManager;
 });
 //# sourceMappingURL=ConfigManager.js.map

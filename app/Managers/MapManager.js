@@ -41,7 +41,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
         }
         MapManager.prototype.showMap = function (appConfig, div) {
             return __awaiter(this, void 0, void 0, function () {
-                var baseLayers, optLayers, basemap, map, view;
+                var baseLayers, optLayers, basemap, view;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -72,13 +72,13 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                             basemap = new Basemap({
                                 baseLayers: baseLayers
                             });
-                            map = new EsriMap({
+                            this.map = new EsriMap({
                                 basemap: basemap,
                                 layers: optLayers
                             });
                             view = new SceneView({
                                 container: this.containerDiv,
-                                map: map,
+                                map: this.map,
                                 viewingMode: "local",
                                 camera: this.appConfig.map.camera
                             });
@@ -119,6 +119,6 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
         };
         return MapManager;
     }());
-    exports.MapManager = MapManager;
+    exports.default = MapManager;
 });
 //# sourceMappingURL=MapManager.js.map

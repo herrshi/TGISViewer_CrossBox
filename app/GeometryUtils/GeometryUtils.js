@@ -70,9 +70,10 @@ define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Poi
                                 if (segLength > length) {
                                     result.push(_this.clipSegment(segment, length));
                                     resolve(result);
+                                    break;
                                 }
                                 else {
-                                    length -= segLength;
+                                    length = length - segLength;
                                 }
                             }
                         })];

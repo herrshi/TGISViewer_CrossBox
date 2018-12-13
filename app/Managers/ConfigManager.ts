@@ -1,4 +1,4 @@
-export class ConfigManager {
+export default class ConfigManager {
   private static instance: ConfigManager;
 
   public appConfig: any;

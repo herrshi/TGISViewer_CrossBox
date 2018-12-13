@@ -47,8 +47,9 @@ export default class GeometryUtils {
         if (segLength > length) {
           result.push(this.clipSegment(segment, length));
           resolve(result);
+          break;
         } else {
-          length -= segLength;
+          length = length - segLength;
         }
       }
     });

@@ -1,3 +1,4 @@
+/// <reference path="globals.d.ts"/>
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -33,9 +34,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, ConfigManager_1, MapManager_1, GeometryUtils_1) {
+define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils", "app/Widgets/CrossBox/CrossBox"], function (require, exports, ConfigManager_1, MapManager_1, GeometryUtils_1, CrossBox_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    // interface QueueData {
+    //   laneId: string,
+    //   queueLength: number
+    // }
     var Map = /** @class */ (function () {
         function Map(params) {
             this.params = params;
@@ -46,14 +51,28 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            configManager = ConfigManager_1.ConfigManager.getInstance();
+                            configManager = ConfigManager_1.default.getInstance();
                             return [4 /*yield*/, configManager.loadConfig(this.params.config)];
                         case 1:
                             _a.sent();
-                            mapManager = MapManager_1.MapManager.getInstance();
+                            mapManager = MapManager_1.default.getInstance();
                             return [4 /*yield*/, mapManager.showMap(configManager.appConfig, this.params.container)];
                         case 2: return [2 /*return*/, _a.sent()];
                     }
+                });
+            });
+        };
+        /**
+         * 设置路口排队长度
+         * @param queueDatas
+         * */
+        Map.prototype.setCrossQueueLength = function (queueDatas) {
+            return __awaiter(this, void 0, void 0, function () {
+                var crossBox;
+                return __generator(this, function (_a) {
+                    crossBox = CrossBox_1.default.getInstance();
+                    crossBox.setQueueLength(queueDatas);
+                    return [2 /*return*/];
                 });
             });
         };

@@ -9,11 +9,13 @@ import Home = require("esri/widgets/Home");
 
 import CameraInfo = require("app/Widgets/CameraInfo/CameraInfo");
 
-export class MapManager {
+export default class MapManager {
   private static instance: MapManager;
 
   private appConfig: any;
   private containerDiv: string;
+
+  public map: EsriMap;
 
   public async showMap(appConfig: any, div: string) {
     console.time("Load Map");
@@ -49,16 +51,16 @@ export class MapManager {
       }
     );
 
-    const basemap = new Basemap({
+    const basemap: Basemap = new Basemap({
       baseLayers: baseLayers
     });
-    const map = new EsriMap({
+    this.map = new EsriMap({
       basemap: basemap,
       layers: optLayers
     });
-    const view = new SceneView({
+    const view: SceneView = new SceneView({
       container: this.containerDiv,
-      map: map,
+      map: this.map,
       viewingMode: "local",
       camera: this.appConfig.map.camera
     });
