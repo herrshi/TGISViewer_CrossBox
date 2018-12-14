@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/layers/FeatureLayer", "esri/Graphic", "esri/geometry/Polygon", "esri/layers/GraphicsLayer", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, FeatureLayer, Graphic, Polygon, GraphicsLayer, MapManager_1, GeometryUtils_1) {
+define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, Graphic, Polygon, GraphicsLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, MapManager_1, GeometryUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var QueueLength = /** @class */ (function () {
@@ -41,6 +41,64 @@ define(["require", "exports", "esri/layers/FeatureLayer", "esri/Graphic", "esri/
             this.graphicsLayer = new GraphicsLayer();
             var mapManager = MapManager_1.default.getInstance();
             mapManager.map.add(this.graphicsLayer);
+            var labelClass = new LabelClass({
+                symbol: new LabelSymbol3D({
+                    symbolLayers: [new TextSymbol3DLayer({
+                            material: {
+                                color: "white"
+                            },
+                            size: 10
+                        })]
+                }),
+                labelPlacement: "above-right",
+                labelExpressionInfo: {
+                    expression: "$feature.queueLength"
+                }
+            });
+            var textSymbol = {
+                type: "point-3d",
+                symbolLayers: [{
+                        type: "icon",
+                        size: 12,
+                        resource: {
+                            primitive: "square"
+                        },
+                        material: {
+                            color: "orange"
+                        },
+                        outline: {
+                            color: "white",
+                            size: 1
+                        }
+                    }]
+            };
+            var textRenderer = new SimpleRenderer({
+                symbol: textSymbol
+            });
+            this.textLayer = new FeatureLayer({
+                fields: [
+                    {
+                        name: "ObjectID",
+                        alias: "ObjectID",
+                        type: "oid"
+                    },
+                    {
+                        name: "laneId",
+                        alias: "车道编号",
+                        type: "string"
+                    },
+                    {
+                        name: "queueLength",
+                        alias: "排队长度",
+                        type: "double"
+                    }
+                ],
+                source: [],
+                objectIdField: "ObjectID",
+                labelingInfo: [labelClass],
+                renderer: textRenderer
+            });
+            // mapManager.map.add(this.textLayer);
         }
         QueueLength.prototype.setQueueLength = function (queueDatas) {
             return __awaiter(this, void 0, void 0, function () {
@@ -48,51 +106,26 @@ define(["require", "exports", "esri/layers/FeatureLayer", "esri/Graphic", "esri/
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            console.log(queueDatas);
                             if (!!this.laneLines) return [3 /*break*/, 2];
-                            return [4 /*yield*/, this.getLaneLines()];
+                            return [4 /*yield*/, this.queryAllLaneLines()];
                         case 1:
                             _a.sent();
                             _a.label = 2;
                         case 2:
+                            this.graphicsLayer.removeAll();
                             queueDatas.forEach(function (queueData) { return __awaiter(_this, void 0, void 0, function () {
-                                var laneId, queueLength, laneInfo, crossId, laneDir, laneIndex, laneLineIndex1, laneLineIndex2, laneLineId1, laneLineId2, laneLine1, laneLine2, queuePath1, queuePath2, ring, queuePolygon, fillSymbol, queueGraphic;
+                                var laneId, queueLength, queuePolygon;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
                                             laneId = queueData.laneId, queueLength = queueData.queueLength;
-                                            laneInfo = laneId.split("-");
-                                            crossId = laneInfo[0], laneDir = laneInfo[1], laneIndex = laneInfo[2];
-                                            laneLineIndex1 = Number(laneIndex) - 1;
-                                            laneLineIndex2 = Number(laneIndex);
-                                            laneLineId1 = crossId + "-" + laneDir + "-00" + laneLineIndex1;
-                                            laneLineId2 = crossId + "-" + laneDir + "-00" + laneLineIndex2;
-                                            laneLine1 = this.getLaneLine(laneLineId1);
-                                            laneLine2 = this.getLaneLine(laneLineId2);
-                                            return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine1.paths[0], queueLength)];
+                                            return [4 /*yield*/, this.getQueuePolygon(laneId, queueLength)];
                                         case 1:
-                                            queuePath1 = _a.sent();
-                                            return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine2.paths[0], queueLength)];
-                                        case 2:
-                                            queuePath2 = _a.sent();
-                                            ring = queuePath1.concat(queuePath2.reverse());
-                                            ring.push(queuePath1[0]);
-                                            queuePolygon = new Polygon({
-                                                rings: [ring]
-                                            });
-                                            fillSymbol = {
-                                                type: "simple-fill",
-                                                color: queueLength <= 10 ? [0, 255, 0, 0.8] : [255, 0, 0, 0.8],
-                                                outline: {
-                                                    color: [255, 255, 255],
-                                                    width: 1
-                                                }
-                                            };
-                                            queueGraphic = new Graphic({
-                                                geometry: queuePolygon,
-                                                symbol: fillSymbol
-                                            });
-                                            this.graphicsLayer.add(queueGraphic);
+                                            queuePolygon = _a.sent();
+                                            if (queuePolygon) {
+                                                // this.addQueueGraphic(queuePolygon, queueData);
+                                                this.addQueueText(queuePolygon, queueData);
+                                            }
                                             return [2 /*return*/];
                                     }
                                 });
@@ -102,8 +135,93 @@ define(["require", "exports", "esri/layers/FeatureLayer", "esri/Graphic", "esri/
                 });
             });
         };
+        /**将polygon符号化以后加到地图中*/
+        QueueLength.prototype.addQueueGraphic = function (polygon, queueData) {
+            var fillSymbol3D = {
+                type: "polygon-3d",
+                symbolLayers: [
+                    {
+                        type: "extrude",
+                        material: {
+                            color: QueueLength.getLaneColor(queueData.queueLength)
+                        },
+                        edges: {
+                            type: "solid",
+                            color: QueueLength.getEdgeColor(queueData.queueLength)
+                        },
+                        size: 3
+                    }
+                ]
+            };
+            var queueGraphic = new Graphic({
+                geometry: polygon,
+                symbol: fillSymbol3D,
+                attributes: queueData
+            });
+            this.graphicsLayer.add(queueGraphic);
+        };
+        /**添加排队长度文字*/
+        QueueLength.prototype.addQueueText = function (polygon, queueData) {
+            var textPoint = polygon.centroid;
+            var textGraphic = new Graphic({
+                geometry: textPoint,
+                attributes: queueData
+            });
+            this.textLayer.source.push(textGraphic);
+            this.textLayer.refresh();
+        };
+        /**
+         * 根据车道的两条边线，生成能贴合车道并能反映排队长度的面
+         * */
+        QueueLength.prototype.getQueuePolygon = function (laneId, queueLength) {
+            return __awaiter(this, void 0, void 0, function () {
+                var laneInfo, crossId, laneDir, laneIndex, laneLineIndex1, laneLineIndex2, laneLineId1, laneLineId2, laneLine1, laneLine2, queuePath1, queuePath2, ring;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            laneInfo = laneId.split("-");
+                            crossId = laneInfo[0], laneDir = laneInfo[1], laneIndex = laneInfo[2];
+                            laneLineIndex1 = Number(laneIndex) - 1;
+                            laneLineIndex2 = Number(laneIndex);
+                            laneLineId1 = crossId + "-" + laneDir + "-00" + laneLineIndex1;
+                            laneLineId2 = crossId + "-" + laneDir + "-00" + laneLineIndex2;
+                            laneLine1 = this.getLaneLine(laneLineId1);
+                            laneLine2 = this.getLaneLine(laneLineId2);
+                            if (!(laneLine1 && laneLine2)) return [3 /*break*/, 3];
+                            return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine1.paths[0], queueLength)];
+                        case 1:
+                            queuePath1 = _a.sent();
+                            return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine2.paths[0], queueLength)];
+                        case 2:
+                            queuePath2 = _a.sent();
+                            ring = queuePath1.concat(queuePath2.reverse());
+                            //ring的终点必须和起点重合
+                            ring.push(queuePath1[0]);
+                            return [2 /*return*/, new Polygon({
+                                    rings: [ring]
+                                })];
+                        case 3: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        /**根据排队长度生成颜色*/
+        QueueLength.getLaneColor = function (queueLength) {
+            return queueLength <= 10
+                ? [100, 210, 122, 0.4]
+                : queueLength <= 20
+                    ? [250, 207, 51, 0.6]
+                    : [172, 0, 0, 0.8];
+        };
+        QueueLength.getEdgeColor = function (queueLength) {
+            return queueLength <= 10
+                ? [37, 129, 55, 1]
+                : queueLength <= 20
+                    ? [204, 159, 4, 1]
+                    : [91, 0, 0, 1];
+        };
         /**从车道服务中查询出所有车道的polyline*/
-        QueueLength.prototype.getLaneLines = function () {
+        QueueLength.prototype.queryAllLaneLines = function () {
             return __awaiter(this, void 0, void 0, function () {
                 var response, crossBoxConfig, laneLayerUrl, laneLayer, query, laneFeatureSet;
                 return __generator(this, function (_a) {

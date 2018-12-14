@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
-  <title>ArcGIS JSAPI 4.9 TypeScript Demo</title>
+  <title>ArcGIS JSAPI 4.10 TypeScript Demo</title>
   <style>
     html, body, #viewDiv {
       height: 100%;
@@ -28,7 +28,7 @@
       margin: 0;
     }
   </style>
-  <link rel="stylesheet" href="http://localhost:8090/arcgis_js_api/library/4.9/esri/css/main.css">
+  <link rel="stylesheet" href="http://localhost:8090/arcgis_js_api/library/4.10/esri/css/main.css">
   <script>
     const locationPath = location.pathname.replace(/\/[^\/]+$/, "");
     window.dojoConfig = {
@@ -40,7 +40,7 @@
       ]
     }
   </script>
-  <script src="http://localhost:8090/arcgis_js_api/library/4.9/init.js"></script>
+  <script src="http://localhost:8090/arcgis_js_api/library/4.10/init.js"></script>
 </head>
 <body>
 <div id="viewDiv"></div>
@@ -56,12 +56,48 @@
 
       map.setCrossQueueLength([
         {
-          laneId: "001-1-1",
+          laneId: "001-0-1",
           queueLength: 10
         },
         {
-          laneId: "001-1-2",
+          laneId: "001-0-2",
           queueLength: 30
+        },
+        {
+          laneId: "001-0-3",
+          queueLength: 12
+        },
+        {
+          laneId: "001-0-4",
+          queueLength: 21
+        },
+        {
+          laneId: "001-0-6",
+          queueLength: 5
+        },
+        {
+          laneId: "001-0-7",
+          queueLength: 8
+        },
+        {
+          laneId: "001-2-1",
+          queueLength: 10
+        },
+        {
+          laneId: "001-2-2",
+          queueLength: 30
+        },
+        {
+          laneId: "001-2-3",
+          queueLength: 12
+        },
+        {
+          laneId: "001-2-4",
+          queueLength: 21
+        },
+        {
+          laneId: "001-2-6",
+          queueLength: 5
         }
       ]);
     });
