@@ -10,13 +10,19 @@ import LabelSymbol3D = require("esri/symbols/LabelSymbol3D");
 import TextSymbol3DLayer = require("esri/symbols/TextSymbol3DLayer");
 import SimpleRenderer = require("esri/renderers/SimpleRenderer");
 
-
-
 import MapManager from "app/Managers/MapManager";
 import GeometryUtils from "app/GeometryUtils/GeometryUtils";
 
 export default class QueueLength {
   private static instance: QueueLength;
+
+  static getInstance(): QueueLength {
+    if (!this.instance) {
+      this.instance = new QueueLength();
+    }
+
+    return this.instance;
+  }
 
   //车道线数据
   private laneLines: { id: string; line: Polyline }[];
@@ -226,13 +232,5 @@ export default class QueueLength {
     });
 
     return line;
-  }
-
-  static getInstance(): QueueLength {
-    if (!this.instance) {
-      this.instance = new QueueLength();
-    }
-
-    return this.instance;
   }
 }

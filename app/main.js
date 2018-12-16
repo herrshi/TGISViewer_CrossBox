@@ -34,13 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils", "app/Widgets/CrossBox/CrossBox"], function (require, exports, ConfigManager_1, MapManager_1, GeometryUtils_1, CrossBox_1) {
+define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/LabelFeatureTest"], function (require, exports, ConfigManager_1, MapManager_1, LabelFeatureTest_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    // interface QueueData {
-    //   laneId: string,
-    //   queueLength: number
-    // }
     var Map = /** @class */ (function () {
         function Map(params) {
             this.params = params;
@@ -67,24 +63,9 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
          * @param queueDatas
          * */
         Map.prototype.setCrossQueueLength = function (queueDatas) {
-            return __awaiter(this, void 0, void 0, function () {
-                var crossBox;
-                return __generator(this, function (_a) {
-                    crossBox = CrossBox_1.default.getInstance();
-                    crossBox.setQueueLength(queueDatas);
-                    return [2 /*return*/];
-                });
-            });
-        };
-        Map.prototype.clipLineInLength = function (line, length) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(line, length)];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                });
-            });
+            // const crossBox: CrossBox = CrossBox.getInstance();
+            // crossBox.setQueueLength(queueDatas);
+            var labelFeature = LabelFeatureTest_1.default.getInstance();
         };
         return Map;
     }());

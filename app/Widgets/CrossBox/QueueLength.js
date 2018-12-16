@@ -100,6 +100,12 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
             });
             // mapManager.map.add(this.textLayer);
         }
+        QueueLength.getInstance = function () {
+            if (!this.instance) {
+                this.instance = new QueueLength();
+            }
+            return this.instance;
+        };
         QueueLength.prototype.setQueueLength = function (queueDatas) {
             return __awaiter(this, void 0, void 0, function () {
                 var _this = this;
@@ -258,12 +264,6 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
                 }
             });
             return line;
-        };
-        QueueLength.getInstance = function () {
-            if (!this.instance) {
-                this.instance = new QueueLength();
-            }
-            return this.instance;
         };
         return QueueLength;
     }());
