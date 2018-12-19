@@ -6,7 +6,6 @@ import TileLayer = require("esri/layers/TileLayer");
 import MapImageLayer = require("esri/layers/MapImageLayer");
 import Home = require("esri/widgets/Home");
 
-
 import CameraInfo = require("app/Widgets/CameraInfo/CameraInfo");
 
 export default class MapManager {
@@ -28,7 +27,7 @@ export default class MapManager {
         let layer: Layer;
         switch (baseLayerConfig.type) {
           case "tile":
-            //Constructors参数中不能含有type
+            //创建图层的参数中不能含有type
             delete baseLayerConfig.type;
             layer = new TileLayer(baseLayerConfig);
             break;
@@ -43,6 +42,7 @@ export default class MapManager {
         let layer: Layer;
         switch (optLayerConfig.type) {
           case "map-image":
+            //创建图层的参数中不能含有type
             delete optLayerConfig.type;
             layer = new MapImageLayer(optLayerConfig);
             break;
@@ -66,9 +66,10 @@ export default class MapManager {
     });
 
     return await view.when(function() {
+      const ui = view.ui;
       //UI
-      view.ui.remove("attribution");
-      view.ui.remove("navigation-toggle");
+      ui.remove("attribution");
+      ui.remove("navigation-toggle");
 
       const homeWidget: Home = new Home({
         view: view
@@ -78,18 +79,43 @@ export default class MapManager {
         view: view
       });
 
-      view.ui.add([
+      ui.add([
         {
           component: homeWidget,
           position: "top-left",
-          index: 1,
+          index: 1
         },
         {
           component: cameraInfoWidget,
           position: "top-right",
-          index: 0,
+          index: 0
         }
       ]);
+
+      view.watch("heightBreakpoint, widthBreakpoint", function() {
+        if (
+          view.heightBreakpoint === "xsmall" ||
+          view.widthBreakpoint === "xsmall"
+        ) {
+          ui.components = [];
+          ui.remove(homeWidget);
+          ui.remove(cameraInfoWidget);
+        } else {
+          ui.components = ["zoom", "compass"];
+          ui.add([
+            {
+              component: homeWidget,
+              position: "top-left",
+              index: 1
+            },
+            {
+              component: cameraInfoWidget,
+              position: "top-right",
+              index: 0
+            }
+          ]);
+        }
+      });
 
       console.timeEnd("Load Map");
     });

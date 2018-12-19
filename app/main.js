@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/LabelFeatureTest"], function (require, exports, ConfigManager_1, MapManager_1, LabelFeatureTest_1) {
+define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/CrossBox", "app/Widgets/CrossBox/LabelFeatureTest"], function (require, exports, ConfigManager_1, MapManager_1, CrossBox_1, LabelFeatureTest_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Map = /** @class */ (function () {
@@ -63,8 +63,8 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
          * @param queueDatas
          * */
         Map.prototype.setCrossQueueLength = function (queueDatas) {
-            // const crossBox: CrossBox = CrossBox.getInstance();
-            // crossBox.setQueueLength(queueDatas);
+            var crossBox = CrossBox_1.default.getInstance();
+            crossBox.setQueueLength(queueDatas);
             var labelFeature = LabelFeatureTest_1.default.getInstance();
         };
         return Map;

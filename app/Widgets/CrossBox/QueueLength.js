@@ -33,72 +33,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, Graphic, Polygon, GraphicsLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, MapManager_1, GeometryUtils_1) {
+define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "esri/geometry/support/webMercatorUtils", "esri/symbols/SimpleMarkerSymbol", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, Graphic, geometryEngine, Point, Polygon, Polyline, GraphicsLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, webMercatorUtils, SimpleMarkerSymbol, MapManager_1, GeometryUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var QueueLength = /** @class */ (function () {
         function QueueLength() {
-            this.graphicsLayer = new GraphicsLayer();
+            //车道中心线
+            this.laneCenterLines = [];
             var mapManager = MapManager_1.default.getInstance();
-            mapManager.map.add(this.graphicsLayer);
-            var labelClass = new LabelClass({
-                symbol: new LabelSymbol3D({
-                    symbolLayers: [new TextSymbol3DLayer({
-                            material: {
-                                color: "white"
-                            },
-                            size: 10
-                        })]
-                }),
-                labelPlacement: "above-right",
-                labelExpressionInfo: {
-                    expression: "$feature.queueLength"
-                }
-            });
-            var textSymbol = {
-                type: "point-3d",
-                symbolLayers: [{
-                        type: "icon",
-                        size: 12,
-                        resource: {
-                            primitive: "square"
-                        },
-                        material: {
-                            color: "orange"
-                        },
-                        outline: {
-                            color: "white",
-                            size: 1
-                        }
-                    }]
-            };
-            var textRenderer = new SimpleRenderer({
-                symbol: textSymbol
-            });
-            this.textLayer = new FeatureLayer({
-                fields: [
-                    {
-                        name: "ObjectID",
-                        alias: "ObjectID",
-                        type: "oid"
-                    },
-                    {
-                        name: "laneId",
-                        alias: "车道编号",
-                        type: "string"
-                    },
-                    {
-                        name: "queueLength",
-                        alias: "排队长度",
-                        type: "double"
-                    }
-                ],
-                source: [],
-                objectIdField: "ObjectID",
-                labelingInfo: [labelClass],
-                renderer: textRenderer
-            });
-            // mapManager.map.add(this.textLayer);
+            this.map = mapManager.map;
+            this.graphicsLayer = new GraphicsLayer();
+            this.map.add(this.graphicsLayer);
         }
         QueueLength.getInstance = function () {
             if (!this.instance) {
@@ -119,6 +64,7 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
                             _a.label = 2;
                         case 2:
                             this.graphicsLayer.removeAll();
+                            this.labelGraphics = [];
                             queueDatas.forEach(function (queueData) { return __awaiter(_this, void 0, void 0, function () {
                                 var laneId, queueLength, queuePolygon;
                                 return __generator(this, function (_a) {
@@ -128,11 +74,12 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
                                             return [4 /*yield*/, this.getQueuePolygon(laneId, queueLength)];
                                         case 1:
                                             queuePolygon = _a.sent();
-                                            if (queuePolygon) {
-                                                // this.addQueueGraphic(queuePolygon, queueData);
-                                                this.addQueueText(queuePolygon, queueData);
-                                            }
-                                            return [2 /*return*/];
+                                            if (!queuePolygon) return [3 /*break*/, 3];
+                                            return [4 /*yield*/, this.addQueueGraphic(queuePolygon, queueData)];
+                                        case 2:
+                                            _a.sent();
+                                            _a.label = 3;
+                                        case 3: return [2 /*return*/];
                                     }
                                 });
                             }); });
@@ -143,38 +90,141 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
         };
         /**将polygon符号化以后加到地图中*/
         QueueLength.prototype.addQueueGraphic = function (polygon, queueData) {
-            var fillSymbol3D = {
-                type: "polygon-3d",
-                symbolLayers: [
-                    {
-                        type: "extrude",
-                        material: {
-                            color: QueueLength.getLaneColor(queueData.queueLength)
-                        },
-                        edges: {
-                            type: "solid",
-                            color: QueueLength.getEdgeColor(queueData.queueLength)
-                        },
-                        size: 3
+            return __awaiter(this, void 0, void 0, function () {
+                var _a, fillColor, edgeColor, fillSymbol3D, queueGraphic;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            _a = QueueLength.getColor(queueData.queueLength), fillColor = _a.fillColor, edgeColor = _a.edgeColor;
+                            fillSymbol3D = {
+                                type: "polygon-3d",
+                                symbolLayers: [
+                                    {
+                                        type: "extrude",
+                                        material: {
+                                            color: fillColor
+                                        },
+                                        edges: {
+                                            type: "solid",
+                                            color: edgeColor
+                                        },
+                                        size: 3
+                                    }
+                                ]
+                            };
+                            queueGraphic = new Graphic({
+                                geometry: polygon,
+                                symbol: fillSymbol3D,
+                                attributes: queueData
+                            });
+                            this.graphicsLayer.add(queueGraphic);
+                            return [4 /*yield*/, this.splitLabelGraphic(queueData)];
+                        case 1:
+                            _b.sent();
+                            return [2 /*return*/];
                     }
-                ]
-            };
-            var queueGraphic = new Graphic({
-                geometry: polygon,
-                symbol: fillSymbol3D,
-                attributes: queueData
+                });
             });
-            this.graphicsLayer.add(queueGraphic);
         };
-        /**添加排队长度文字*/
-        QueueLength.prototype.addQueueText = function (polygon, queueData) {
-            var textPoint = polygon.centroid;
-            var textGraphic = new Graphic({
-                geometry: textPoint,
-                attributes: queueData
+        /**
+         * 按字拆分graphic
+         * sceneView中，polyline的标注无法沿线放置，所以在线上按字数取一系列点，给点加标注
+         * */
+        QueueLength.prototype.splitLabelGraphic = function (queueData) {
+            return __awaiter(this, void 0, void 0, function () {
+                var lineData, centerLine, labelText, labelGap, i, clippedPath, labelPoint, graphic;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            lineData = this.laneCenterLines.filter(function (lineObj) {
+                                return lineObj.id === queueData.laneId;
+                            });
+                            if (lineData.length === 0) {
+                                return [2 /*return*/];
+                            }
+                            centerLine = lineData[0].line;
+                            labelText = queueData.queueLength + "米";
+                            labelGap = 4;
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < labelText.length)) return [3 /*break*/, 4];
+                            return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(centerLine.paths[0], labelGap * (i + 1))];
+                        case 2:
+                            clippedPath = _a.sent();
+                            labelPoint = clippedPath[clippedPath.length - 1];
+                            graphic = new Graphic({
+                                geometry: new Point({
+                                    x: labelPoint[0],
+                                    y: labelPoint[1]
+                                }),
+                                attributes: { ObjectID: queueData.laneId + i, text: labelText[i] }
+                            });
+                            this.labelGraphics.push(graphic);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
             });
-            this.textLayer.source.push(textGraphic);
-            this.textLayer.refresh();
+        };
+        QueueLength.prototype.generateLabel = function () {
+            if (this.labelLayer) {
+                this.map.remove(this.labelLayer);
+            }
+            this.labelLayer = new FeatureLayer({
+                source: this.labelGraphics,
+                geometryType: "point",
+                fields: [
+                    {
+                        name: "ObjectID",
+                        alias: "ObjectID",
+                        type: "oid"
+                    },
+                    {
+                        name: "text",
+                        alias: "text",
+                        type: "string"
+                    }
+                ],
+                objectIdField: "ObjectID",
+                renderer: new SimpleRenderer({
+                    symbol: new SimpleMarkerSymbol({
+                        size: 0,
+                        color: "white"
+                    })
+                }),
+                outFields: ["*"],
+                labelingInfo: [
+                    new LabelClass({
+                        labelPlacement: "above-center",
+                        labelExpressionInfo: {
+                            expression: "$feature.text"
+                        },
+                        symbol: new LabelSymbol3D({
+                            symbolLayers: [
+                                new TextSymbol3DLayer({
+                                    material: {
+                                        color: "black"
+                                    },
+                                    halo: {
+                                        color: [255, 255, 255, 0.7],
+                                        size: 2
+                                    },
+                                    size: 10
+                                })
+                            ],
+                            verticalOffset: {
+                                screenLength: 20,
+                                minWorldLength: 4
+                            },
+                        })
+                    })
+                ]
+            });
+            this.map.add(this.labelLayer);
         };
         /**
          * 根据车道的两条边线，生成能贴合车道并能反映排队长度的面
@@ -193,38 +243,59 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
                             laneLineId2 = crossId + "-" + laneDir + "-00" + laneLineIndex2;
                             laneLine1 = this.getLaneLine(laneLineId1);
                             laneLine2 = this.getLaneLine(laneLineId2);
-                            if (!(laneLine1 && laneLine2)) return [3 /*break*/, 3];
+                            if (!(laneLine1 && laneLine2)) return [3 /*break*/, 4];
                             return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine1.paths[0], queueLength)];
                         case 1:
                             queuePath1 = _a.sent();
                             return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(laneLine2.paths[0], queueLength)];
                         case 2:
                             queuePath2 = _a.sent();
+                            return [4 /*yield*/, this.extractCenterline(laneId, laneLine1, laneLine2)];
+                        case 3:
+                            _a.sent();
                             ring = queuePath1.concat(queuePath2.reverse());
                             //ring的终点必须和起点重合
                             ring.push(queuePath1[0]);
                             return [2 /*return*/, new Polygon({
                                     rings: [ring]
                                 })];
-                        case 3: return [2 /*return*/];
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
         };
-        /**根据排队长度生成颜色*/
-        QueueLength.getLaneColor = function (queueLength) {
-            return queueLength <= 10
-                ? [100, 210, 122, 0.4]
-                : queueLength <= 20
-                    ? [250, 207, 51, 0.6]
-                    : [172, 0, 0, 0.8];
+        //获取两条车道线的中线，用于标注排队长度
+        QueueLength.prototype.extractCenterline = function (id, laneLine1, laneLine2) {
+            var lineObjs = this.laneCenterLines.filter(function (lineObj) {
+                return lineObj.id === id;
+            });
+            if (lineObjs.length > 0) {
+                return lineObjs[0].line;
+            }
+            //将两条车道线的起点连线，以计算车道宽度
+            var path = [
+                laneLine1.paths[0][0],
+                laneLine2.paths[0][0]
+            ];
+            var line = new Polyline({
+                paths: [path]
+            });
+            //offset需要geometry和offsetUnit单位一致，所以转到墨卡托投影
+            var projectedLine = webMercatorUtils.geographicToWebMercator(laneLine1);
+            var distance = geometryEngine.geodesicLength(line, "meters");
+            var offsetLength = distance / 2;
+            var offsetLine = geometryEngine.offset(projectedLine, -offsetLength, "meters", "miter");
+            var geographicLine = webMercatorUtils.webMercatorToGeographic(offsetLine);
+            this.laneCenterLines.push({ id: id, line: geographicLine });
+            return offsetLine;
         };
-        QueueLength.getEdgeColor = function (queueLength) {
+        /**根据排队长度生成填充颜色*/
+        QueueLength.getColor = function (queueLength) {
             return queueLength <= 10
-                ? [37, 129, 55, 1]
+                ? { fillColor: [100, 210, 122, 0.4], edgeColor: [37, 129, 55, 1] }
                 : queueLength <= 20
-                    ? [204, 159, 4, 1]
-                    : [91, 0, 0, 1];
+                    ? { fillColor: [250, 207, 51, 0.6], edgeColor: [204, 159, 4, 1] }
+                    : { fillColor: [172, 0, 0, 0.8], edgeColor: [91, 0, 0, 1] };
         };
         /**从车道服务中查询出所有车道的polyline*/
         QueueLength.prototype.queryAllLaneLines = function () {
@@ -256,6 +327,7 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/Polygon", "esri/lay
                 });
             });
         };
+        //根据id获取车道线
         QueueLength.prototype.getLaneLine = function (id) {
             var line;
             this.laneLines.forEach(function (laneLineObj) {

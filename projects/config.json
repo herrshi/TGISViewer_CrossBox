@@ -4,7 +4,7 @@
       {
         "title": "底图",
         "type": "tile",
-        "url": "https://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
+        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_base_PurplishBlue/MapServer",
         "visible": true
       }
     ],

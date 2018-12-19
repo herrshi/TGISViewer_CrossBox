@@ -25,8 +25,8 @@ class Map {
    * @param queueDatas
    * */
   public setCrossQueueLength(queueDatas: Array<QueueData>) {
-    // const crossBox: CrossBox = CrossBox.getInstance();
-    // crossBox.setQueueLength(queueDatas);
+    const crossBox: CrossBox = CrossBox.getInstance();
+    crossBox.setQueueLength(queueDatas);
     const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
   }
 }

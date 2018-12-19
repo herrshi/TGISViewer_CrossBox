@@ -52,7 +52,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 var layer;
                                 switch (baseLayerConfig.type) {
                                     case "tile":
-                                        //Constructors参数中不能含有type
+                                        //创建图层的参数中不能含有type
                                         delete baseLayerConfig.type;
                                         layer = new TileLayer(baseLayerConfig);
                                         break;
@@ -63,6 +63,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 var layer;
                                 switch (optLayerConfig.type) {
                                     case "map-image":
+                                        //创建图层的参数中不能含有type
                                         delete optLayerConfig.type;
                                         layer = new MapImageLayer(optLayerConfig);
                                         break;
@@ -83,27 +84,51 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 camera: this.appConfig.map.camera
                             });
                             return [4 /*yield*/, view.when(function () {
+                                    var ui = view.ui;
                                     //UI
-                                    view.ui.remove("attribution");
-                                    view.ui.remove("navigation-toggle");
+                                    ui.remove("attribution");
+                                    ui.remove("navigation-toggle");
                                     var homeWidget = new Home({
                                         view: view
                                     });
                                     var cameraInfoWidget = new CameraInfo({
                                         view: view
                                     });
-                                    view.ui.add([
+                                    ui.add([
                                         {
                                             component: homeWidget,
                                             position: "top-left",
-                                            index: 1,
+                                            index: 1
                                         },
                                         {
                                             component: cameraInfoWidget,
                                             position: "top-right",
-                                            index: 0,
+                                            index: 0
                                         }
                                     ]);
+                                    view.watch("heightBreakpoint, widthBreakpoint", function () {
+                                        if (view.heightBreakpoint === "xsmall" ||
+                                            view.widthBreakpoint === "xsmall") {
+                                            ui.components = [];
+                                            ui.remove(homeWidget);
+                                            ui.remove(cameraInfoWidget);
+                                        }
+                                        else {
+                                            ui.components = ["zoom", "compass"];
+                                            ui.add([
+                                                {
+                                                    component: homeWidget,
+                                                    position: "top-left",
+                                                    index: 1
+                                                },
+                                                {
+                                                    component: cameraInfoWidget,
+                                                    position: "top-right",
+                                                    index: 0
+                                                }
+                                            ]);
+                                        }
+                                    });
                                     console.timeEnd("Load Map");
                                 })];
                         case 1: return [2 /*return*/, _a.sent()];
