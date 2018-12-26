@@ -1,4 +1,3 @@
-/// <reference path="globals.d.ts"/>
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -34,44 +33,52 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/CrossBox", "app/Widgets/CrossBox/LabelFeatureTest"], function (require, exports, ConfigManager_1, MapManager_1, CrossBox_1, LabelFeatureTest_1) {
+define(["require", "exports", "esri/layers/MapImageLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, MapImageLayer, MapManager_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Map = /** @class */ (function () {
-        function Map(params) {
-            this.params = params;
+    var ShiftStage = /** @class */ (function () {
+        function ShiftStage() {
+            this.map = MapManager_1.default.getInstance().map;
         }
-        Map.prototype.createMap = function () {
+        ShiftStage.getInstance = function () {
+            if (!this.instance) {
+                this.instance = new ShiftStage();
+            }
+            return this.instance;
+        };
+        ShiftStage.prototype.shiftStage = function (crossId, stage) {
             return __awaiter(this, void 0, void 0, function () {
-                var configManager, mapManager;
+                var response, crossBoxConfig, stageLayerUrl;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            configManager = ConfigManager_1.default.getInstance();
-                            return [4 /*yield*/, configManager.loadConfig(this.params.config)];
+                            if (!!this.stagesLayer) return [3 /*break*/, 3];
+                            return [4 /*yield*/, fetch("app/Widgets/CrossBox/config.json")];
                         case 1:
-                            _a.sent();
-                            mapManager = MapManager_1.default.getInstance();
-                            return [4 /*yield*/, mapManager.showMap(configManager.appConfig, this.params.container)];
-                        case 2: return [2 /*return*/, _a.sent()];
+                            response = _a.sent();
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            crossBoxConfig = _a.sent();
+                            stageLayerUrl = crossBoxConfig.layers.stage;
+                            stageLayerUrl = stageLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
+                            this.stagesLayer = new MapImageLayer({
+                                url: stageLayerUrl,
+                                sublayers: [
+                                    {
+                                        id: 0,
+                                        definitionExpression: "STAGES like '%" + stage + "%'"
+                                    }
+                                ]
+                            });
+                            this.map.add(this.stagesLayer);
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
                 });
             });
         };
-        /**
-         * 设置路口排队长度
-         * @param queueDatas
-         * */
-        Map.prototype.setCrossQueueLength = function (queueDatas) {
-            // const crossBox: CrossBox = CrossBox.getInstance();
-            CrossBox_1.default.setQueueLength(queueDatas);
-            var labelFeature = LabelFeatureTest_1.default.getInstance();
-        };
-        Map.prototype.shiftStage = function (crossId, stage) {
-            CrossBox_1.default.shiftStage(crossId, stage);
-        };
-        return Map;
+        return ShiftStage;
     }());
-    exports.Map = Map;
+    exports.default = ShiftStage;
 });
-//# sourceMappingURL=main.js.map
+//# sourceMappingURL=ShiftStage.js.map

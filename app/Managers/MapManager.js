@@ -54,6 +54,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                     case "tile":
                                         //创建图层的参数中不能含有type
                                         delete baseLayerConfig.type;
+                                        baseLayerConfig.url = baseLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
                                         layer = new TileLayer(baseLayerConfig);
                                         break;
                                 }
@@ -65,6 +66,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                     case "map-image":
                                         //创建图层的参数中不能含有type
                                         delete optLayerConfig.type;
+                                        optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
                                         layer = new MapImageLayer(optLayerConfig);
                                         break;
                                 }

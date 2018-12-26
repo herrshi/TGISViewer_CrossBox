@@ -25,9 +25,13 @@ class Map {
    * @param queueDatas
    * */
   public setCrossQueueLength(queueDatas: Array<QueueData>) {
-    const crossBox: CrossBox = CrossBox.getInstance();
-    crossBox.setQueueLength(queueDatas);
+    // const crossBox: CrossBox = CrossBox.getInstance();
+    CrossBox.setQueueLength(queueDatas);
     const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
+  }
+
+  public shiftStage(crossId: string, stage: string) {
+    CrossBox.shiftStage(crossId, stage);
   }
 }
 

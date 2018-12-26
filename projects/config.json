@@ -1,10 +1,11 @@
 {
   "map": {
+    "gisServer": "128.64.151.245:6080",
     "basemaps": [
       {
         "title": "底图",
         "type": "tile",
-        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_base_PurplishBlue/MapServer",
+        "url": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_base_PurplishBlue/MapServer",
         "visible": true
       }
     ],
@@ -12,7 +13,7 @@
       {
         "title": "路口渠化图",
         "type": "map-image",
-        "url": "http://172.30.30.1:6080/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
+        "url": "http://128.64.151.245:6080/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
         "visible": true
       }
     ],

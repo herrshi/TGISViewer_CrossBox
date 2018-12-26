@@ -1,25 +1,23 @@
 import QueueLength from "app/Widgets/CrossBox/QueueLength";
+import ShiftStage from "app/Widgets/CrossBox/ShiftStage";
 
 export default class CrossBox {
-  private static instance: CrossBox;
-
-  private queueLength: QueueLength;
+  // private queueLength: QueueLength;
+  // private shiftStage: ShiftStage;
 
   constructor() {
-    this.queueLength = QueueLength.getInstance();
+    // this.queueLength = QueueLength.getInstance();
+    // this.shiftStage = ShiftStage.getInstance();
   }
 
-  public setQueueLength(queueDatas: Array<QueueData>) {
+  public static async setQueueLength(queueDatas: Array<QueueData>) {
     const queueLength: QueueLength = QueueLength.getInstance();
-    queueLength.setQueueLength(queueDatas);
+    await queueLength.setQueueLength(queueDatas);
   }
 
-  static getInstance(): CrossBox {
-    if (!this.instance) {
-      this.instance = new CrossBox();
-    }
-
-    return this.instance;
+  public static shiftStage(crossId: string, stage: string) {
+    const shiftStage: ShiftStage = ShiftStage.getInstance();
+    shiftStage.shiftStage(crossId, stage);
   }
 
 }

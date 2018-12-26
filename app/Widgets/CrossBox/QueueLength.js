@@ -33,15 +33,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "esri/geometry/support/webMercatorUtils", "esri/symbols/SimpleMarkerSymbol", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils"], function (require, exports, Graphic, geometryEngine, Point, Polygon, Polyline, GraphicsLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, webMercatorUtils, SimpleMarkerSymbol, MapManager_1, GeometryUtils_1) {
+define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "esri/geometry/support/webMercatorUtils", "esri/symbols/SimpleMarkerSymbol", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils", "app/Managers/ConfigManager"], function (require, exports, Graphic, geometryEngine, Point, Polygon, Polyline, GraphicsLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, webMercatorUtils, SimpleMarkerSymbol, MapManager_1, GeometryUtils_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var QueueLength = /** @class */ (function () {
         function QueueLength() {
             //车道中心线
             this.laneCenterLines = [];
-            var mapManager = MapManager_1.default.getInstance();
-            this.map = mapManager.map;
+            this.map = MapManager_1.default.getInstance().map;
             this.graphicsLayer = new GraphicsLayer();
             this.map.add(this.graphicsLayer);
         }
@@ -310,6 +309,8 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
                         case 2:
                             crossBoxConfig = _a.sent();
                             laneLayerUrl = crossBoxConfig.layers.lane;
+                            // const configManager: ConfigManager = ConfigManager.getInstance();
+                            laneLayerUrl = laneLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
                             laneLayer = new FeatureLayer({
                                 url: laneLayerUrl
                             });

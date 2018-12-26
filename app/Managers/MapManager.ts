@@ -29,6 +29,7 @@ export default class MapManager {
           case "tile":
             //创建图层的参数中不能含有type
             delete baseLayerConfig.type;
+            baseLayerConfig.url = baseLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
             layer = new TileLayer(baseLayerConfig);
             break;
         }
@@ -44,6 +45,7 @@ export default class MapManager {
           case "map-image":
             //创建图层的参数中不能含有type
             delete optLayerConfig.type;
+            optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
             layer = new MapImageLayer(optLayerConfig);
             break;
         }

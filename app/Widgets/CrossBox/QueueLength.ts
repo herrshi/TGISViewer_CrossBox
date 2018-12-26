@@ -13,15 +13,16 @@ import LabelSymbol3D = require("esri/symbols/LabelSymbol3D");
 import TextSymbol3DLayer = require("esri/symbols/TextSymbol3DLayer");
 import SimpleRenderer = require("esri/renderers/SimpleRenderer");
 import webMercatorUtils = require("esri/geometry/support/webMercatorUtils");
-import PointSymbol3D = require("esri/symbols/PointSymbol3D");
-import IconSymbol3DLayer = require("esri/symbols/IconSymbol3DLayer");
+// import PointSymbol3D = require("esri/symbols/PointSymbol3D");
+// import IconSymbol3DLayer = require("esri/symbols/IconSymbol3DLayer");
 import SimpleMarkerSymbol = require("esri/symbols/SimpleMarkerSymbol");
-import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
+// import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
 import Map = require("esri/Map");
-import LineCallout3D = require("esri/symbols/callouts/LineCallout3D");
+// import LineCallout3D = require("esri/symbols/callouts/LineCallout3D");
 
 import MapManager from "app/Managers/MapManager";
 import GeometryUtils from "app/GeometryUtils/GeometryUtils";
+import ConfigManager from "app/Managers/ConfigManager";
 
 export default class QueueLength {
   private static instance: QueueLength;
@@ -47,8 +48,7 @@ export default class QueueLength {
   private labelLayer: FeatureLayer;
 
   constructor() {
-    const mapManager: MapManager = MapManager.getInstance();
-    this.map = mapManager.map;
+    this.map = MapManager.getInstance().map;
 
     this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer);
@@ -289,7 +289,9 @@ export default class QueueLength {
   private async queryAllLaneLines() {
     const response = await fetch("app/Widgets/CrossBox/config.json");
     const crossBoxConfig = await response.json();
-    const laneLayerUrl: string = crossBoxConfig.layers.lane;
+    let laneLayerUrl: string = crossBoxConfig.layers.lane;
+    // const configManager: ConfigManager = ConfigManager.getInstance();
+    laneLayerUrl = laneLayerUrl.replace(/{gisServer}/i, ConfigManager.getInstance().appConfig.map.gisServer);
     const laneLayer: FeatureLayer = new FeatureLayer({
       url: laneLayerUrl
     });
