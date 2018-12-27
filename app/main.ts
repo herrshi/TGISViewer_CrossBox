@@ -2,9 +2,9 @@
 
 import ConfigManager from "app/Managers/ConfigManager";
 import MapManager from "app/Managers/MapManager";
-import GeometryUtils from "app/GeometryUtils/GeometryUtils";
+// import GeometryUtils from "app/GeometryUtils/GeometryUtils";
 import CrossBox from "app/Widgets/CrossBox/CrossBox";
-import LabelFeatureTest from "app/Widgets/CrossBox/LabelFeatureTest";
+// import LabelFeatureTest from "app/Widgets/CrossBox/LabelFeatureTest";
 
 class Map {
   private params: any;
@@ -16,6 +16,7 @@ class Map {
   public async createMap() {
     const configManager: ConfigManager = ConfigManager.getInstance();
     await configManager.loadConfig(this.params.config);
+    configManager.appConfig.viewerUrl = this.params.viewerUrl;
     const mapManager: MapManager = MapManager.getInstance();
     return await mapManager.showMap(configManager.appConfig, this.params.container);
   }
@@ -27,7 +28,7 @@ class Map {
   public setCrossQueueLength(queueDatas: Array<QueueData>) {
     // const crossBox: CrossBox = CrossBox.getInstance();
     CrossBox.setQueueLength(queueDatas);
-    const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
+    // const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
   }
 
   public shiftStage(crossId: string, stage: string) {

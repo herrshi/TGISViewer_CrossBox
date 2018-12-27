@@ -4,6 +4,7 @@ import SceneView = require("esri/views/SceneView");
 import Layer = require("esri/layers/Layer");
 import TileLayer = require("esri/layers/TileLayer");
 import MapImageLayer = require("esri/layers/MapImageLayer");
+import FeatureLayer = require("esri/layers/FeatureLayer");
 import Home = require("esri/widgets/Home");
 
 import CameraInfo = require("app/Widgets/CameraInfo/CameraInfo");
@@ -41,12 +42,18 @@ export default class MapManager {
     const optLayers: Array<Layer> = appConfig.map.operationallayers.map(
       (optLayerConfig: any) => {
         let layer: Layer;
+        optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
+
         switch (optLayerConfig.type) {
           case "map-image":
             //创建图层的参数中不能含有type
             delete optLayerConfig.type;
-            optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
             layer = new MapImageLayer(optLayerConfig);
+            break;
+
+          case "feature":
+            delete optLayerConfig.type;
+            layer = new FeatureLayer(optLayerConfig);
             break;
         }
         return layer;
@@ -93,31 +100,6 @@ export default class MapManager {
           index: 0
         }
       ]);
-
-      view.watch("heightBreakpoint, widthBreakpoint", function() {
-        if (
-          view.heightBreakpoint === "xsmall" ||
-          view.widthBreakpoint === "xsmall"
-        ) {
-          ui.components = [];
-          ui.remove(homeWidget);
-          ui.remove(cameraInfoWidget);
-        } else {
-          ui.components = ["zoom", "compass"];
-          ui.add([
-            {
-              component: homeWidget,
-              position: "top-left",
-              index: 1
-            },
-            {
-              component: cameraInfoWidget,
-              position: "top-right",
-              index: 0
-            }
-          ]);
-        }
-      });
 
       console.timeEnd("Load Map");
     });

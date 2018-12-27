@@ -46,58 +46,62 @@
 <div id="viewDiv"></div>
 <script>
   let map;
-  require(["app/main.js"], function (main) {
+  require(["http://localhost:8090/TGISViewer_CrossBox/app/main.js"], function (main) {
 
-    map = new main.Map({config: "projects/config.json", container: "viewDiv"});
-    map.createMap().then(async () => {
+    map = new main.Map({
+      config: "http://localhost:8090/TGISViewer_CrossBox/projects/config.json",
+      container: "viewDiv",
+      viewerUrl: "http://localhost:8090/TGISViewer_CrossBox"
+    });
+    map.createMap().then( () => {
       console.log("map create finish.");
       map.shiftStage("", "B");
-      // map.setCrossQueueLength([
-      //   {
-      //     laneId: "001-0-1",
-      //     queueLength: 10
-      //   },
-      //   {
-      //     laneId: "001-0-2",
-      //     queueLength: 30
-      //   },
-      //   {
-      //     laneId: "001-0-3",
-      //     queueLength: 12
-      //   },
-      //   {
-      //     laneId: "001-0-4",
-      //     queueLength: 21
-      //   },
-      //   {
-      //     laneId: "001-0-6",
-      //     queueLength: 5
-      //   },
-      //   {
-      //     laneId: "001-0-7",
-      //     queueLength: 8
-      //   },
-      //   {
-      //     laneId: "001-2-1",
-      //     queueLength: 10
-      //   },
-      //   {
-      //     laneId: "001-2-2",
-      //     queueLength: 30
-      //   },
-      //   {
-      //     laneId: "001-2-3",
-      //     queueLength: 12
-      //   },
-      //   {
-      //     laneId: "001-2-4",
-      //     queueLength: 21
-      //   },
-      //   {
-      //     laneId: "001-2-6",
-      //     queueLength: 5
-      //   }
-      // ]);
+      map.setCrossQueueLength([
+        {
+          laneId: "001-0-1",
+          queueLength: 10
+        },
+        {
+          laneId: "001-0-2",
+          queueLength: 30
+        },
+        {
+          laneId: "001-0-3",
+          queueLength: 12
+        },
+        {
+          laneId: "001-0-4",
+          queueLength: 21
+        },
+        {
+          laneId: "001-0-6",
+          queueLength: 5
+        },
+        {
+          laneId: "001-0-7",
+          queueLength: 8
+        },
+        {
+          laneId: "001-2-1",
+          queueLength: 10
+        },
+        {
+          laneId: "001-2-2",
+          queueLength: 30
+        },
+        {
+          laneId: "001-2-3",
+          queueLength: 12
+        },
+        {
+          laneId: "001-2-4",
+          queueLength: 21
+        },
+        {
+          laneId: "001-2-6",
+          queueLength: 5
+        }
+      ]);
 
     });
   });

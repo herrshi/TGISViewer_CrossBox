@@ -1,6 +1,6 @@
 {
   "map": {
-    "gisServer": "128.64.151.245:6080",
+    "gisServer": "101.95.186.146:8997",
     "basemaps": [
       {
         "title": "底图",
@@ -13,8 +13,40 @@
       {
         "title": "路口渠化图",
         "type": "map-image",
-        "url": "http://128.64.151.245:6080/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
+        "url": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer",
         "visible": true
+      },
+      {
+        "title": "摄像机",
+        "type": "feature",
+        "url": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/6",
+        "visible": true,
+        "outFields": ["*"],
+        "renderer": {
+          "type": "simple",
+          "symbol": {
+            "type": "picture-marker",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAjCAYAAACOysqWAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAYdEVYdENyZWF0aW9uIFRpbWUAMjAxNC4xMC4zMKHHVocAAAOBSURBVEiJrZZdaFxFFMd/M3PvftgusqjdxGC0ElAUjPRBQQSFWLi+SEBxnxRBClKwYh8VEQV9UKk1tk8iSBHaqVCtiCwoKuKTgjYifjRtpZ82DzHVbffzzhwfbmKT3bubzccfzsvMOed//mfm3jOKQVCubALGgTGgCfwOzGCj2kqhqk/SIvAM8CQmHNPXFPSSGPG1ah3XPgEcBj7ARhcGJyhXngXe0tfdGJrSzUrlC6luUq/iZk+Ln7twDtgDvIeNrvQmKFdGgT16c3HSjN5hVCbXU+AyolYDd+ZX7y/PHwR2YKN6N0G5UgIO6OLQdnPTbb1b1wfu7B/i5y9+CTyKjaoAesn+Xl0sbTcjYwrvWIuZkTGli6WHgDcoV8KrBOXKhAqzk6Y0qvAx6zFTGlUqzO4A7k8IyhUD7DdDW3MI4Nz6TMAMbTXAiwABcK8KM2Pk8oiP19L6buTyqDDzoJQrdwbA06pQNGxU8gWoQlHL37NPBMA9KptPDioFD9ya7Vq7VPdM/9XuT5DNA9wXADegFOK6Ffz4/Ah3DWdSE0x99y+7P53jlmLAkadKbHv7fAeDUsCWANiM1qkKeiUHuHs4ZHwo4KudI1ybS4nXGiAXAOFa+n/9Jn01OdCVw3sAFwBz0qgNq0x3r/uh0faIyJKEyxVIqynARQ18LK2miIvptH6oNh0TUyc5di757XTFt5oAX2vgsDRqPu3TPzp9qSfB9Nkax85cZmLv8cSvI1YaNQE+UpQrOeAnXSjcThCsqk09Ecf4avU3YFxjowbwptRrDhezESb1mgdewUbtxZKtxO4xaTQeVplwfdW3YyR2nwBHYfk82AL8rHJhCb2mcQBekEb7OLBtcbJ1TrRJtDqkMnp1d3YB0nQNhEew0ReLa92lliuHMPI4us+DIA1OCZ592GjX0mWd4voCTp3E+cGnmfPg+RN4uTNZN4GNTgGv4bVHPAOZ13XgOWw0vzJBgg9BfY6YlVsjRkAdxEafpW2nE9goBnYjZr7f2wwUiDkFvNTLo5cCsNEMsB8xvqdPsvd6r1ddf4IE+xB9IlWFaBD9A2D7JehPYKPZhCRFhRgH7Op8Kq6OIMEBRJ9fpkI0oL7BRt+vFLwygY3+Ad5Jbsv/YTHw6gDFDaQA4F1EX0lUKBD9Czb6duMIbNQiOXAWvo33ByxsYAUAU4g5jegZ4MigQf8B39UQW7Kw/9gAAAAASUVORK5CYII=",
+            "width": "24px",
+            "height": "35px"
+          }
+        }
+      },
+      {
+        "title": "雷达",
+        "type": "feature",
+        "url": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/7",
+        "visible": true,
+        "outFields": ["*"],
+        "renderer": {
+          "type": "simple",
+          "symbol": {
+            "type": "picture-marker",
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAmCAYAAADa8osYAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAXdEVYdENyZWF0aW9uIFRpbWUAMjAxNS40LjE0oKu/ZwAABJxJREFUSIm1l39sFEUUxz8zc727luv1jkJ7tWeh1CoqFhIMasSYmOCtP6IoxjMhShRjQmKChBAxGGKI0WgkaoA//MOQYIxdiUEEpATBoJIQ/kBBMRCBUilYbLGV1va6vd3xj20p593uXRW/yfzzZt77zJvZmTcrKKZ020JgOdACRAE12qOBy8AhYBOmsbOQu9YaAOERPA4sAVbJWE2djNUKURlHBMtzg1hD6P5enL6L2un7vRN4C9iMaQwWB6Xb5gIbZSQ+T027VYpguGjSLjSD3XFcOwO9B4EXMY2j3iAXslPVN9eqKcnC2RaR3dOp7fO/nASexDR+zAeNQZI3JWS89t8wrsjpvYjdefICcI9uTZ0ZB7l78qVKNN4hq+sKZvLhI2Genl2WY/vo6AhLv8gUhl36Tdtd7V8Bi3Rrql+O2peIiug8Ga8RODaF2j8hgGvzGC/jNUJURO8DngAYA61SienSywnH9lknbx+VmK6A1QAB0m0LRaSqDqXQfgE95OujFCJS1Sye2rMgACyXFZUCJzthiJuRv5+sqMQe+POFANAiQuX+y+ML8vcToXIBzAsAUaT830BICTBZAko7NsXaur299A05V/z7hhzW7e0t6je6h0FBuk2r+saSJh8rl5x+dQYATa+fyQH7yT7f7rift50t2mJBzf5lSarCkqqwZP+yJLGgLskXsCTQTdYCbfu2tUY1LfXjF2xLfZi1RnVRP7IWQJcg3bZbVEYNESovkPR/lx4e0rr/8qcSeI/hjPa9FXxaIiIJK+09ZjgDsFFiGnu0ZV0iO+I5OHVzhERE5tkbYorNz0xjznWhwr7ZEbRlXQQOj911a/TggMbJMtYenhWlqToATpbZ9WE+XjqD9NwYsTBMnSR49q7JvLPoenYd+4NDp/u4pTbIgpkRro6hBweGgWW6NWVdXY++FaHg3ZQFBMBz82tZfGcNj274mYFhm/nNUVamktx7YxVCwJ6fevngQBdfn+ijubacTYtvYPN3XXxyuNuNN5LVetj6XLemHofcwjcT+EaEg1ORrvmVhxpI3TaZTfvOs+OHS2RGcs/NlEgZi26fykv3J1m99Qzbv+9xOxyNzljHgMdyC984bDFSbBFBNbakzGmoZIXRQHWkjPbuITp6hgiXKepiQRqqw5ztybB+dwdne8YLoLZsG0c/gGns9XozBIDtKB4UKrerPh5iVjJCoipEbFKAExf+4sjZfrr7rdzP2dZgswFYgWnYfq+gacA+lNOE0HndvtICbHkK02i+YhoFybzBptEBrMEW9oTPlS0GgecLzSEf5GobiM/QyqO7UDZKg9iCaRwoHWQaFrAKrUa8HrO5EqBVJ/CG1wivjMA0fgVWujMtInfMy5jGuYmDXNgGtDzlm5WWoOVBYKtfKH+QqxU4Ae96rQOXgeWYhu8rpTjINHaBOIyW+UvoLtkOTONIsTClZASwHmR+3dZqAHizlAClgnaj5bGcvXKz2YZpHL92IPfH6t2cL1BLB3itxImWnBHAVrQ8554ZCYiDmEb7tQeZRgZ4370tJMDbE5hkScc+V+m2C6N+jaNwX41dqn8Dovy9Q5/9SawAAAAASUVORK5CYII=",
+            "width": "24px",
+            "height": "35px"
+          }
+        }
       }
     ],
     "camera": {

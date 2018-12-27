@@ -34,9 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/CrossBox", "app/Widgets/CrossBox/LabelFeatureTest"], function (require, exports, ConfigManager_1, MapManager_1, CrossBox_1, LabelFeatureTest_1) {
+define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapManager", "app/Widgets/CrossBox/CrossBox"], function (require, exports, ConfigManager_1, MapManager_1, CrossBox_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    // import LabelFeatureTest from "app/Widgets/CrossBox/LabelFeatureTest";
     var Map = /** @class */ (function () {
         function Map(params) {
             this.params = params;
@@ -51,6 +52,7 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
                             return [4 /*yield*/, configManager.loadConfig(this.params.config)];
                         case 1:
                             _a.sent();
+                            configManager.appConfig.viewerUrl = this.params.viewerUrl;
                             mapManager = MapManager_1.default.getInstance();
                             return [4 /*yield*/, mapManager.showMap(configManager.appConfig, this.params.container)];
                         case 2: return [2 /*return*/, _a.sent()];
@@ -65,7 +67,7 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
         Map.prototype.setCrossQueueLength = function (queueDatas) {
             // const crossBox: CrossBox = CrossBox.getInstance();
             CrossBox_1.default.setQueueLength(queueDatas);
-            var labelFeature = LabelFeatureTest_1.default.getInstance();
+            // const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
         };
         Map.prototype.shiftStage = function (crossId, stage) {
             CrossBox_1.default.shiftStage(crossId, stage);

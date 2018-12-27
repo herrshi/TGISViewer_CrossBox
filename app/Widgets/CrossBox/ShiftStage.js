@@ -33,12 +33,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/layers/MapImageLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, MapImageLayer, MapManager_1, ConfigManager_1) {
+define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImageLayer", "esri/tasks/QueryTask", "esri/tasks/support/Query", "esri/symbols/PictureMarkerSymbol", "esri/symbols/WebStyleSymbol", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, GraphicsLayer, MapImageLayer, QueryTask, Query, PictureMarkerSymbol, WebStyleSymbol, MapManager_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ShiftStage = /** @class */ (function () {
         function ShiftStage() {
+            //车行灯高度
+            this.CAR_LAMP_HEIGHT = 10;
+            //人行灯高度
+            this.MAN_LAMP_HEIGHT = 5;
             this.map = MapManager_1.default.getInstance().map;
+            this.appConfig = ConfigManager_1.default.getInstance().appConfig;
+            this.signalLampLayer = new GraphicsLayer();
+            this.map.add(this.signalLampLayer);
         }
         ShiftStage.getInstance = function () {
             if (!this.instance) {
@@ -48,12 +55,33 @@ define(["require", "exports", "esri/layers/MapImageLayer", "app/Managers/MapMana
         };
         ShiftStage.prototype.shiftStage = function (crossId, stage) {
             return __awaiter(this, void 0, void 0, function () {
-                var response, crossBoxConfig, stageLayerUrl;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!!this.stagesLayer) return [3 /*break*/, 3];
-                            return [4 /*yield*/, fetch("app/Widgets/CrossBox/config.json")];
+                            if (!!this.stagesLayer) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.createStageLayer()];
+                        case 1:
+                            _a.sent();
+                            _a.label = 2;
+                        case 2:
+                            this.stagesLayer.findSublayerById(0).definitionExpression = "STAGES like '%" + stage + "%'";
+                            this.stagesLayer.refresh();
+                            if (!!this.signalLampGraphic) return [3 /*break*/, 4];
+                            return [4 /*yield*/, this.getSignalLamps()];
+                        case 3:
+                            _a.sent();
+                            _a.label = 4;
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        ShiftStage.prototype.createStageLayer = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var response, crossBoxConfig, stageLayerUrl;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
                         case 1:
                             response = _a.sent();
                             return [4 /*yield*/, response.json()];
@@ -62,19 +90,138 @@ define(["require", "exports", "esri/layers/MapImageLayer", "app/Managers/MapMana
                             stageLayerUrl = crossBoxConfig.layers.stage;
                             stageLayerUrl = stageLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
                             this.stagesLayer = new MapImageLayer({
-                                url: stageLayerUrl,
-                                sublayers: [
-                                    {
-                                        id: 0,
-                                        definitionExpression: "STAGES like '%" + stage + "%'"
-                                    }
-                                ]
+                                url: stageLayerUrl
                             });
                             this.map.add(this.stagesLayer);
-                            _a.label = 3;
-                        case 3: return [2 /*return*/];
+                            return [2 /*return*/, this.stagesLayer.when()];
                     }
                 });
+            });
+        };
+        ShiftStage.prototype.getSignalLamps = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var response, crossBoxConfig, signalLampLayerUrl, queryTask, query, results;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
+                        case 1:
+                            response = _a.sent();
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            crossBoxConfig = _a.sent();
+                            signalLampLayerUrl = crossBoxConfig.layers.signalLamp;
+                            signalLampLayerUrl = signalLampLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
+                            queryTask = new QueryTask({
+                                url: signalLampLayerUrl
+                            });
+                            query = new Query();
+                            query.returnGeometry = true;
+                            query.outFields = ["*"];
+                            query.where = "1=1";
+                            return [4 /*yield*/, queryTask.execute(query)];
+                        case 3:
+                            results = _a.sent();
+                            results.features.forEach(function (graphic) { return __awaiter(_this, void 0, void 0, function () {
+                                var lampAppClass, symbolHeading, symbol, walkSignalLampSymbol, objectSymbolLayer, symbol, carSignalLampSymbol, objectSymbolLayer;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            lampAppClass = graphic.attributes.LAMPAPPCLASS;
+                                            symbolHeading = graphic.attributes.HEADING;
+                                            if (!(lampAppClass === "4")) return [3 /*break*/, 2];
+                                            symbol = new WebStyleSymbol({
+                                                name: "Traffic_Light_3",
+                                                styleName: "EsriRealisticSignsandSignalsStyle"
+                                            });
+                                            return [4 /*yield*/, symbol.fetchSymbol()];
+                                        case 1:
+                                            walkSignalLampSymbol = _a.sent();
+                                            objectSymbolLayer = walkSignalLampSymbol.symbolLayers.getItemAt(0).clone();
+                                            // objectSymbolLayer.material = {color: "white"};
+                                            objectSymbolLayer.height *= 3;
+                                            objectSymbolLayer.width *= 2;
+                                            objectSymbolLayer.depth *= 2;
+                                            objectSymbolLayer.heading = symbolHeading;
+                                            walkSignalLampSymbol.symbolLayers.removeAll();
+                                            walkSignalLampSymbol.symbolLayers.add(objectSymbolLayer);
+                                            graphic.symbol = walkSignalLampSymbol;
+                                            return [3 /*break*/, 4];
+                                        case 2:
+                                            symbol = new WebStyleSymbol({
+                                                name: "Traffic_Light_2",
+                                                styleName: "EsriRealisticSignsandSignalsStyle"
+                                            });
+                                            return [4 /*yield*/, symbol.fetchSymbol()];
+                                        case 3:
+                                            carSignalLampSymbol = _a.sent();
+                                            objectSymbolLayer = carSignalLampSymbol.symbolLayers.getItemAt(0).clone();
+                                            // objectSymbolLayer.material = {color: "white"};
+                                            objectSymbolLayer.height *= 2;
+                                            objectSymbolLayer.width *= 2;
+                                            objectSymbolLayer.depth *= 2;
+                                            objectSymbolLayer.heading = symbolHeading;
+                                            carSignalLampSymbol.symbolLayers.removeAll();
+                                            carSignalLampSymbol.symbolLayers.add(objectSymbolLayer);
+                                            graphic.symbol = carSignalLampSymbol;
+                                            _a.label = 4;
+                                        case 4:
+                                            this.signalLampLayer.add(graphic);
+                                            return [2 /*return*/, graphic];
+                                    }
+                                });
+                            }); });
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        ShiftStage.prototype.showSignalLampStage = function (stage) {
+            var _this = this;
+            this.signalLampGraphic.forEach(function (graphic) {
+                var lampAppClass = graphic.attributes.LAMPAPPCLASS;
+                var greenStage = graphic.attributes.GREENSTAGE;
+                var picUrl;
+                var picWidth;
+                var picHeight;
+                switch (lampAppClass) {
+                    case "1":
+                        //机动车信号灯
+                        if (greenStage.indexOf(stage) >= 0) {
+                            picUrl = "/app/images/point_green.png";
+                        }
+                        else {
+                            picUrl = "/app/images/point_red.png";
+                        }
+                        picHeight = picWidth = "72px";
+                        break;
+                    case "4":
+                        //人行横道信号灯
+                        if (greenStage.indexOf(stage) >= 0) {
+                            picUrl = "/app/images/Man_green.png";
+                        }
+                        else {
+                            picUrl = "/app/images/Man_red.png";
+                        }
+                        picHeight = picWidth = "36px";
+                        break;
+                    case "6":
+                        //左转机动车信号灯
+                        if (greenStage.indexOf(stage) >= 0) {
+                            picUrl = "/app/images/TurnLeft_green.png";
+                        }
+                        else {
+                            picUrl = "/app/images/TurnLeft_red.png";
+                        }
+                        picHeight = picWidth = "72px";
+                        break;
+                }
+                graphic.symbol = new PictureMarkerSymbol({
+                    url: _this.appConfig.viewerUrl + picUrl,
+                    width: picWidth,
+                    height: picHeight
+                });
+                _this.signalLampLayer.add(graphic);
             });
         };
         return ShiftStage;

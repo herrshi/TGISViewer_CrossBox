@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "esri/widgets/Home", "app/Widgets/CameraInfo/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, Home, CameraInfo) {
+define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer", "esri/widgets/Home", "app/Widgets/CameraInfo/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, FeatureLayer, Home, CameraInfo) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MapManager = /** @class */ (function () {
@@ -62,12 +62,16 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                             });
                             optLayers = appConfig.map.operationallayers.map(function (optLayerConfig) {
                                 var layer;
+                                optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
                                 switch (optLayerConfig.type) {
                                     case "map-image":
                                         //创建图层的参数中不能含有type
                                         delete optLayerConfig.type;
-                                        optLayerConfig.url = optLayerConfig.url.replace(/{gisServer}/i, appConfig.map.gisServer);
                                         layer = new MapImageLayer(optLayerConfig);
+                                        break;
+                                    case "feature":
+                                        delete optLayerConfig.type;
+                                        layer = new FeatureLayer(optLayerConfig);
                                         break;
                                 }
                                 return layer;
@@ -108,29 +112,6 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                             index: 0
                                         }
                                     ]);
-                                    view.watch("heightBreakpoint, widthBreakpoint", function () {
-                                        if (view.heightBreakpoint === "xsmall" ||
-                                            view.widthBreakpoint === "xsmall") {
-                                            ui.components = [];
-                                            ui.remove(homeWidget);
-                                            ui.remove(cameraInfoWidget);
-                                        }
-                                        else {
-                                            ui.components = ["zoom", "compass"];
-                                            ui.add([
-                                                {
-                                                    component: homeWidget,
-                                                    position: "top-left",
-                                                    index: 1
-                                                },
-                                                {
-                                                    component: cameraInfoWidget,
-                                                    position: "top-right",
-                                                    index: 0
-                                                }
-                                            ]);
-                                        }
-                                    });
                                     console.timeEnd("Load Map");
                                 })];
                         case 1: return [2 /*return*/, _a.sent()];
