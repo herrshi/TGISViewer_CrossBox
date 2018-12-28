@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polyline"], function (require, exports, geometryEngine, Point, Polyline) {
+define(["require", "exports", "esri/geometry/geometryEngineAsync", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polyline"], function (require, exports, geometryEngineAsync, geometryEngine, Point, Polyline) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var GeometryUtils = /** @class */ (function () {
@@ -50,33 +50,48 @@ define(["require", "exports", "esri/geometry/geometryEngine", "esri/geometry/Poi
             return __awaiter(this, void 0, void 0, function () {
                 var _this = this;
                 return __generator(this, function (_a) {
-                    return [2 /*return*/, new Promise(function (resolve) {
-                            //先计算总长度
-                            //若总长度小于切割长度，则返回整条折线
-                            var polyline = new Polyline({
-                                paths: [line]
+                    return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+                            var polyline, totalLength, result, i, segment, segLength;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        polyline = new Polyline({
+                                            paths: [line]
+                                        });
+                                        return [4 /*yield*/, geometryEngineAsync.geodesicLength(polyline, this.UNIT)];
+                                    case 1:
+                                        totalLength = _a.sent();
+                                        if (totalLength < length) {
+                                            resolve(line);
+                                        }
+                                        result = [];
+                                        i = 0;
+                                        _a.label = 2;
+                                    case 2:
+                                        if (!(i < line.length - 1)) return [3 /*break*/, 5];
+                                        result.push(line[i]);
+                                        segment = new Polyline({
+                                            paths: [[line[i], line[i + 1]]]
+                                        });
+                                        return [4 /*yield*/, geometryEngineAsync.geodesicLength(segment, this.UNIT)];
+                                    case 3:
+                                        segLength = _a.sent();
+                                        if (segLength > length) {
+                                            result.push(this.clipSegment(segment, length));
+                                            resolve(result);
+                                            return [3 /*break*/, 5];
+                                        }
+                                        else {
+                                            length = length - segLength;
+                                        }
+                                        _a.label = 4;
+                                    case 4:
+                                        i++;
+                                        return [3 /*break*/, 2];
+                                    case 5: return [2 /*return*/];
+                                }
                             });
-                            var totalLength = geometryEngine.geodesicLength(polyline, _this.UNIT);
-                            if (totalLength < length) {
-                                resolve(line);
-                            }
-                            var result = [];
-                            for (var i = 0; i < line.length - 1; i++) {
-                                result.push(line[i]);
-                                var segment = new Polyline({
-                                    paths: [[line[i], line[i + 1]]]
-                                });
-                                var segLength = geometryEngine.geodesicLength(segment, _this.UNIT);
-                                if (segLength > length) {
-                                    result.push(_this.clipSegment(segment, length));
-                                    resolve(result);
-                                    break;
-                                }
-                                else {
-                                    length = length - segLength;
-                                }
-                            }
-                        })];
+                        }); })];
                 });
             });
         };

@@ -18,13 +18,13 @@ export default class GeometryUtils {
     line: Array<Array<number>>,
     length: number
   ): Promise<Array<Array<number>>> {
-    return new Promise<Array<Array<number>>>(resolve => {
+    return new Promise<Array<Array<number>>>(async resolve => {
       //先计算总长度
       //若总长度小于切割长度，则返回整条折线
       let polyline: Polyline = new Polyline({
         paths: [line]
       });
-      const totalLength: number = geometryEngine.geodesicLength(
+      const totalLength: number = await geometryEngineAsync.geodesicLength(
         polyline,
         this.UNIT
       );
@@ -39,7 +39,7 @@ export default class GeometryUtils {
         const segment: Polyline = new Polyline({
           paths: [[line[i], line[i + 1]]]
         });
-        const segLength: number = geometryEngine.geodesicLength(
+        const segLength: number = await geometryEngineAsync.geodesicLength(
           segment,
           this.UNIT
         );

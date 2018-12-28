@@ -3,5 +3,87 @@
     "lane": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/4",
     "stage": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_Stages/MapServer",
     "signalLamp": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/5"
-  }
+  },
+  "vehicleSymbols": [
+    {
+      "name": "Audi_A6",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "BMW_3-Series",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Bus",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Edge",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Expedition",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_F-150",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Fiesta",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Focus_Hatchback",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Fusion",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Mustang",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Taurus",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Transit_Commercial_Van",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Ford_Transit_Connect",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Mercedes_S-Class",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Porsche_Boxter",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Porsche_Carrera",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Taxi",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Tesla_P7",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Toyota_Prius",
+      "styleName": "EsriRealisticTransportationStyle"
+    },
+    {
+      "name": "Volkswagen_Jetta_Wagon",
+      "styleName": "EsriRealisticTransportationStyle"
+    }
+  ]
 }

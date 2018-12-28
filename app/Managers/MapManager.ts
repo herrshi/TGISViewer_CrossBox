@@ -8,6 +8,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import Home = require("esri/widgets/Home");
 
 import CameraInfo = require("app/Widgets/CameraInfo/CameraInfo");
+import Graphic = __esri.Graphic;
 
 export default class MapManager {
   private static instance: MapManager;
@@ -77,29 +78,42 @@ export default class MapManager {
     return await view.when(function() {
       const ui = view.ui;
       //UI
-      ui.remove("attribution");
-      ui.remove("navigation-toggle");
+      // ui.remove("attribution");
+      // ui.remove("navigation-toggle");
+      //
+      // const homeWidget: Home = new Home({
+      //   view: view
+      // });
+      //
+      // const cameraInfoWidget: CameraInfo = new CameraInfo({
+      //   view: view
+      // });
+      //
+      // ui.add([
+      //   {
+      //     component: homeWidget,
+      //     position: "top-left",
+      //     index: 1
+      //   },
+      //   {
+      //     component: cameraInfoWidget,
+      //     position: "top-right",
+      //     index: 0
+      //   }
+      // ]);
 
-      const homeWidget: Home = new Home({
-        view: view
-      });
+      //不显示UI
+      ui.empty("top-left");
 
-      const cameraInfoWidget: CameraInfo = new CameraInfo({
-        view: view
-      });
-
-      ui.add([
-        {
-          component: homeWidget,
-          position: "top-left",
-          index: 1
-        },
-        {
-          component: cameraInfoWidget,
-          position: "top-right",
-          index: 0
+      //点击事件
+      view.on("click", async event => {
+        const response = await view.hitTest(event);
+        const result = response.results[0];
+        if (result) {
+          const graphic = result.graphic;
+          showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
         }
-      ]);
+      });
 
       console.timeEnd("Load Map");
     });

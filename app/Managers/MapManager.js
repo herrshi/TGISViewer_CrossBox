@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer", "esri/widgets/Home", "app/Widgets/CameraInfo/CameraInfo"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, FeatureLayer, Home, CameraInfo) {
+define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView", "esri/layers/TileLayer", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer"], function (require, exports, EsriMap, Basemap, SceneView, TileLayer, MapImageLayer, FeatureLayer) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var MapManager = /** @class */ (function () {
@@ -90,28 +90,51 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                 camera: this.appConfig.map.camera
                             });
                             return [4 /*yield*/, view.when(function () {
+                                    var _this = this;
                                     var ui = view.ui;
                                     //UI
-                                    ui.remove("attribution");
-                                    ui.remove("navigation-toggle");
-                                    var homeWidget = new Home({
-                                        view: view
-                                    });
-                                    var cameraInfoWidget = new CameraInfo({
-                                        view: view
-                                    });
-                                    ui.add([
-                                        {
-                                            component: homeWidget,
-                                            position: "top-left",
-                                            index: 1
-                                        },
-                                        {
-                                            component: cameraInfoWidget,
-                                            position: "top-right",
-                                            index: 0
-                                        }
-                                    ]);
+                                    // ui.remove("attribution");
+                                    // ui.remove("navigation-toggle");
+                                    //
+                                    // const homeWidget: Home = new Home({
+                                    //   view: view
+                                    // });
+                                    //
+                                    // const cameraInfoWidget: CameraInfo = new CameraInfo({
+                                    //   view: view
+                                    // });
+                                    //
+                                    // ui.add([
+                                    //   {
+                                    //     component: homeWidget,
+                                    //     position: "top-left",
+                                    //     index: 1
+                                    //   },
+                                    //   {
+                                    //     component: cameraInfoWidget,
+                                    //     position: "top-right",
+                                    //     index: 0
+                                    //   }
+                                    // ]);
+                                    //不显示UI
+                                    ui.empty("top-left");
+                                    //点击事件
+                                    view.on("click", function (event) { return __awaiter(_this, void 0, void 0, function () {
+                                        var response, result, graphic;
+                                        return __generator(this, function (_a) {
+                                            switch (_a.label) {
+                                                case 0: return [4 /*yield*/, view.hitTest(event)];
+                                                case 1:
+                                                    response = _a.sent();
+                                                    result = response.results[0];
+                                                    if (result) {
+                                                        graphic = result.graphic;
+                                                        showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
+                                                    }
+                                                    return [2 /*return*/];
+                                            }
+                                        });
+                                    }); });
                                     console.timeEnd("Load Map");
                                 })];
                         case 1: return [2 /*return*/, _a.sent()];

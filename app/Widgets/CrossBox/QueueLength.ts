@@ -1,24 +1,17 @@
+import Map = require("esri/Map");
 import Query = require("esri/tasks/support/Query");
 import FeatureSet = require("esri/tasks/support/FeatureSet");
 import Graphic = require("esri/Graphic");
 import geometryEngine = require("esri/geometry/geometryEngine");
-// import geometryEngineAsync = require("esri/geometry/geometryEngineAsync");
 import Point = require("esri/geometry/Point");
 import Polygon = require("esri/geometry/Polygon");
 import Polyline = require("esri/geometry/Polyline");
 import GraphicsLayer = require("esri/layers/GraphicsLayer");
 import FeatureLayer = require("esri/layers/FeatureLayer");
-import LabelClass = require("esri/layers/support/LabelClass");
-import LabelSymbol3D = require("esri/symbols/LabelSymbol3D");
-import TextSymbol3DLayer = require("esri/symbols/TextSymbol3DLayer");
-import SimpleRenderer = require("esri/renderers/SimpleRenderer");
 import webMercatorUtils = require("esri/geometry/support/webMercatorUtils");
-// import PointSymbol3D = require("esri/symbols/PointSymbol3D");
-// import IconSymbol3DLayer = require("esri/symbols/IconSymbol3DLayer");
-import SimpleMarkerSymbol = require("esri/symbols/SimpleMarkerSymbol");
-// import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
-import Map = require("esri/Map");
-// import LineCallout3D = require("esri/symbols/callouts/LineCallout3D");
+import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
+import PointSymbol3D = require("esri/symbols/PointSymbol3D");
+import ObjectSymbol3DLayer = require("esri/symbols/ObjectSymbol3DLayer");
 
 import MapManager from "app/Managers/MapManager";
 import GeometryUtils from "app/GeometryUtils/GeometryUtils";
@@ -37,15 +30,14 @@ export default class QueueLength {
 
   private map: Map;
 
+  private crossBoxConfig: any;
+
   //车道线数据
   private laneLines: { id: string; line: Polyline }[];
   //车道中心线
   private laneCenterLines: { id: string; line: Polyline }[] = [];
-  //
-  private labelGraphics: Graphic[];
 
   private readonly graphicsLayer: GraphicsLayer;
-  private labelLayer: FeatureLayer;
 
   constructor() {
     this.map = MapManager.getInstance().map;
@@ -60,7 +52,6 @@ export default class QueueLength {
     }
 
     this.graphicsLayer.removeAll();
-    this.labelGraphics = [];
 
     queueDatas.forEach(async queueData => {
       const { laneId, queueLength } = queueData;
@@ -70,10 +61,10 @@ export default class QueueLength {
         queueLength
       );
       if (queuePolygon) {
-        await this.addQueueGraphic(queuePolygon, queueData);
+        // await this.addQueueGraphic(queuePolygon, queueData);
+        await this.placeRandomVehicles(queueData);
       }
     });
-    // this.generateLabel();
   }
 
   /**将polygon符号化以后加到地图中*/
@@ -81,123 +72,22 @@ export default class QueueLength {
     const { fillColor, edgeColor } = QueueLength.getColor(
       queueData.queueLength
     );
-    const fillSymbol3D = {
-      type: "polygon-3d",
+    const queueSymbol = {
+      type: "polygon-3d", // autocasts as new PolygonSymbol3D()
       symbolLayers: [
         {
-          type: "extrude",
-          material: {
-            color: fillColor
-          },
-          edges: {
-            type: "solid",
-            color: edgeColor
-          },
-          size: 3
+          type: "fill", // autocasts as new FillSymbol3DLayer()
+          material: { color: fillColor },
+          outline: { color: edgeColor }
         }
       ]
     };
     const queueGraphic: Graphic = new Graphic({
       geometry: polygon,
-      symbol: fillSymbol3D,
+      symbol: queueSymbol,
       attributes: queueData
     });
     this.graphicsLayer.add(queueGraphic);
-
-    await this.splitLabelGraphic(queueData);
-  }
-
-  /**
-   * 按字拆分graphic
-   * sceneView中，polyline的标注无法沿线放置，所以在线上按字数取一系列点，给点加标注
-   * */
-  private async splitLabelGraphic(queueData: QueueData) {
-    const lineData = this.laneCenterLines.filter(function(lineObj) {
-      return lineObj.id === queueData.laneId;
-    });
-    if (lineData.length === 0) {
-      return;
-    }
-
-    const centerLine: Polyline = lineData[0].line;
-    const labelText: string = queueData.queueLength + "米";
-    //每个字的距离
-    const labelGap: number = 4;
-    for (let i = 0; i < labelText.length; i++) {
-      const clippedPath = await GeometryUtils.clipPolylineInLength(
-        centerLine.paths[0],
-        labelGap * (i + 1)
-      );
-      //每个字的标注点
-      const labelPoint = clippedPath[clippedPath.length - 1];
-      const graphic: Graphic = new Graphic({
-        geometry: new Point({
-          x: labelPoint[0],
-          y: labelPoint[1]
-        }),
-        attributes: { ObjectID: queueData.laneId + i, text: labelText[i] }
-      });
-      this.labelGraphics.push(graphic);
-    }
-    // this.generateLabel();
-  }
-
-  private generateLabel() {
-    if (this.labelLayer) {
-      this.map.remove(this.labelLayer);
-    }
-
-    this.labelLayer = new FeatureLayer({
-      source: this.labelGraphics,
-      geometryType: "point",
-      fields: [
-        {
-          name: "ObjectID",
-          alias: "ObjectID",
-          type: "oid"
-        },
-        {
-          name: "text",
-          alias: "text",
-          type: "string"
-        }
-      ],
-      objectIdField: "ObjectID",
-      renderer: new SimpleRenderer({
-        symbol: new SimpleMarkerSymbol({
-          size: 0,
-          color: "white"
-        })
-      }),
-      outFields: ["*"],
-      labelingInfo: [
-        new LabelClass({
-          labelPlacement: "above-center",
-          labelExpressionInfo: {
-            expression: "$feature.text"
-          },
-          symbol: new LabelSymbol3D({
-            symbolLayers: [
-              new TextSymbol3DLayer({
-                material: {
-                  color: "black"
-                },
-                halo: {
-                  color: [255, 255, 255, 0.7],
-                  size: 2
-                },
-                size: 10
-              })
-            ],
-            verticalOffset: {
-              screenLength: 20,
-              minWorldLength: 4
-            },
-          })
-        })
-      ]
-    });
-    this.map.add(this.labelLayer);
   }
 
   /**
@@ -224,7 +114,7 @@ export default class QueueLength {
         queueLength
       );
 
-      await this.extractCenterline(laneId, laneLine1, laneLine2);
+      await this.extractCentreLine(laneId, laneLine1, laneLine2);
 
       //将两条path组合连接成ring
       const ring: Array<Array<number>> = queuePath1.concat(
@@ -238,8 +128,70 @@ export default class QueueLength {
     }
   }
 
-  //获取两条车道线的中线，用于标注排队长度
-  private extractCenterline(
+  /**
+   * 按照排队长度，在车道上放置随机车辆
+   * */
+  private async placeRandomVehicles(queueData: QueueData) {
+    let line: Polyline;
+    for (let i = 0; i < this.laneCenterLines.length; i++) {
+      if (this.laneCenterLines[i].id === queueData.laneId) {
+        line = this.laneCenterLines[i].line;
+        break;
+      }
+    }
+
+    //前车尾部到停车线的距离
+    let frontVehicleDistance: number = 0;
+    //当前车辆位于
+    while (frontVehicleDistance < queueData.queueLength) {
+      const vehicleSymbol: PointSymbol3D = await this.getRandomVehicleSymbol();
+      const vehicleLength: number = (vehicleSymbol.symbolLayers.getItemAt(
+        0
+      ) as ObjectSymbol3DLayer).depth;
+      const path = await GeometryUtils.clipPolylineInLength(
+        line.paths[0],
+        frontVehicleDistance + vehicleLength / 2 + 1
+      );
+      const [x, y] = path[path.length - 1];
+      const vehiclePoint: Point = new Point({
+        x: x,
+        y: y
+      });
+      QueueLength.setVehicleSymbolHeading(vehicleSymbol, line.getPoint(0, 0), vehiclePoint);
+      const vehicleGraphic: Graphic = new Graphic({
+        geometry: vehiclePoint,
+        symbol: vehicleSymbol
+      });
+      this.graphicsLayer.add(vehicleGraphic);
+
+      frontVehicleDistance += (vehicleLength + 1);
+    }
+
+    // let pt1: Point = line.getPoint(0, 0);
+    // let pt2: Point = line.getPoint(0, 1);
+    // const vehicleSymbol: PointSymbol3D = await this.getRandomVehicleSymbol();
+    // QueueLength.setVehicleSymbolHeading(vehicleSymbol, pt1, pt2);
+    // const vehicleLength: number = (vehicleSymbol.symbolLayers.getItemAt(
+    //   0
+    // ) as ObjectSymbol3DLayer).depth;
+    // const path = await GeometryUtils.clipPolylineInLength(
+    //   line.paths[0],
+    //   vehicleLength / 2
+    // );
+    // const [x, y] = path[path.length - 1];
+    // const vehiclePoint: Point = new Point({
+    //   x: x,
+    //   y: y
+    // });
+    // const vehicleGraphic: Graphic = new Graphic({
+    //   geometry: vehiclePoint,
+    //   symbol: vehicleSymbol
+    // });
+    // this.graphicsLayer.add(vehicleGraphic);
+  }
+
+  //获取两条车道线的中线
+  private extractCentreLine(
     id: string,
     laneLine1: Polyline,
     laneLine2: Polyline
@@ -287,11 +239,14 @@ export default class QueueLength {
 
   /**从车道服务中查询出所有车道的polyline*/
   private async queryAllLaneLines() {
-    const response = await fetch("app/Widgets/CrossBox/config.json");
-    const crossBoxConfig = await response.json();
-    let laneLayerUrl: string = crossBoxConfig.layers.lane;
+    const response = await fetch(ConfigManager.getInstance().appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json");
+    this.crossBoxConfig = await response.json();
+    let laneLayerUrl: string = this.crossBoxConfig.layers.lane;
     // const configManager: ConfigManager = ConfigManager.getInstance();
-    laneLayerUrl = laneLayerUrl.replace(/{gisServer}/i, ConfigManager.getInstance().appConfig.map.gisServer);
+    laneLayerUrl = laneLayerUrl.replace(
+      /{gisServer}/i,
+      ConfigManager.getInstance().appConfig.map.gisServer
+    );
     const laneLayer: FeatureLayer = new FeatureLayer({
       url: laneLayerUrl
     });
@@ -306,7 +261,7 @@ export default class QueueLength {
 
   //根据id获取车道线
   private getLaneLine(id: string): Polyline {
-    let line;
+    let line: Polyline;
     this.laneLines.forEach(laneLineObj => {
       if (laneLineObj.id === id) {
         line = laneLineObj.line;
@@ -314,5 +269,46 @@ export default class QueueLength {
     });
 
     return line;
+  }
+
+  private async getRandomVehicleSymbol() {
+    const vehicleSymbols: { name: string; styleName: string }[] = this
+      .crossBoxConfig.vehicleSymbols;
+    const random: number = Math.round(
+      Math.random() * (vehicleSymbols.length - 1)
+    );
+    const originalSymbol: WebStyleSymbol = new WebStyleSymbol(
+      vehicleSymbols[random]
+    );
+    return await originalSymbol.fetchSymbol();
+  }
+
+  //设置车辆模型的车头朝向
+  private static setVehicleSymbolHeading(symbol: PointSymbol3D, pt1: Point, pt2: Point) {
+    pt1 = webMercatorUtils.geographicToWebMercator(pt1) as Point;
+    pt2 = webMercatorUtils.geographicToWebMercator(pt2) as Point;
+    let objectSymbolLayer: ObjectSymbol3DLayer = (symbol.symbolLayers.getItemAt(
+      0
+    ) as ObjectSymbol3DLayer).clone();
+    objectSymbolLayer.heading = QueueLength.calculateAngle(pt1, pt2);
+    symbol.symbolLayers.removeAll();
+    symbol.symbolLayers.add(objectSymbolLayer);
+  }
+
+  private static calculateAngle(pt1: Point, pt2: Point) {
+    let radian: number = Math.atan2(pt2.y - pt1.y, pt2.x - pt1.x);
+    radian = radian - Math.PI / 2;
+    let degrees: number;
+    if (radian > 0) {
+      degrees = 360 - (radian * 360) / (2 * Math.PI);
+    } else {
+      degrees = 360 - ((2 * Math.PI + radian) * 360) / (2 * Math.PI);
+    }
+    //车道线的方向是从停车线开始指向后方，和行车方向相反，需要偏转180度
+    degrees += 180;
+    if (degrees > 360) {
+      degrees -= 360;
+    }
+    return degrees;
   }
 }
