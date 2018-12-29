@@ -104,6 +104,7 @@ export default class MapManager {
 
       //不显示UI
       ui.empty("top-left");
+      ui.remove("attribution");
 
       //点击事件
       view.on("click", async event => {
@@ -111,7 +112,9 @@ export default class MapManager {
         const result = response.results[0];
         if (result) {
           const graphic = result.graphic;
-          showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
+          if (graphic) {
+            showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
+          }
         }
       });
 

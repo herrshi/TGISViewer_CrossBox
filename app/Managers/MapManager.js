@@ -118,6 +118,7 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                     // ]);
                                     //不显示UI
                                     ui.empty("top-left");
+                                    ui.remove("attribution");
                                     //点击事件
                                     view.on("click", function (event) { return __awaiter(_this, void 0, void 0, function () {
                                         var response, result, graphic;
@@ -129,7 +130,9 @@ define(["require", "exports", "esri/Map", "esri/Basemap", "esri/views/SceneView"
                                                     result = response.results[0];
                                                     if (result) {
                                                         graphic = result.graphic;
-                                                        showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
+                                                        if (graphic) {
+                                                            showGisDeviceInfo(graphic.attributes.FEATURETYPE, graphic.attributes.FEATUREID);
+                                                        }
                                                     }
                                                     return [2 /*return*/];
                                             }
