@@ -9,7 +9,6 @@ import Polyline = require("esri/geometry/Polyline");
 import GraphicsLayer = require("esri/layers/GraphicsLayer");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import webMercatorUtils = require("esri/geometry/support/webMercatorUtils");
-import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
 import PointSymbol3D = require("esri/symbols/PointSymbol3D");
 import ObjectSymbol3DLayer = require("esri/symbols/ObjectSymbol3DLayer");
 
@@ -28,6 +27,8 @@ export default class QueueLength {
     return this.instance;
   }
 
+  private appConfig: any;
+
   private map: Map;
 
   private crossBoxConfig: any;
@@ -41,6 +42,8 @@ export default class QueueLength {
 
   constructor() {
     this.map = MapManager.getInstance().map;
+
+    this.appConfig = ConfigManager.getInstance().appConfig;
 
     this.graphicsLayer = new GraphicsLayer();
     this.map.add(this.graphicsLayer);
@@ -144,7 +147,7 @@ export default class QueueLength {
     let frontVehicleDistance: number = 0;
     //当前车辆位于
     while (frontVehicleDistance < queueData.queueLength) {
-      const vehicleSymbol: PointSymbol3D = await this.getRandomVehicleSymbol();
+      const vehicleSymbol: PointSymbol3D = this.getRandomVehicleSymbol();
       const vehicleLength: number = (vehicleSymbol.symbolLayers.getItemAt(
         0
       ) as ObjectSymbol3DLayer).depth;
@@ -157,14 +160,18 @@ export default class QueueLength {
         x: x,
         y: y
       });
-      QueueLength.setVehicleSymbolHeading(vehicleSymbol, line.getPoint(0, 0), vehiclePoint);
+      QueueLength.setVehicleSymbolHeading(
+        vehicleSymbol,
+        line.getPoint(0, 0),
+        vehiclePoint
+      );
       const vehicleGraphic: Graphic = new Graphic({
         geometry: vehiclePoint,
         symbol: vehicleSymbol
       });
       this.graphicsLayer.add(vehicleGraphic);
 
-      frontVehicleDistance += (vehicleLength + 1);
+      frontVehicleDistance += vehicleLength + 1;
     }
 
     // let pt1: Point = line.getPoint(0, 0);
@@ -239,13 +246,15 @@ export default class QueueLength {
 
   /**从车道服务中查询出所有车道的polyline*/
   private async queryAllLaneLines() {
-    const response = await fetch(ConfigManager.getInstance().appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json");
+    const response = await fetch(
+      this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json"
+    );
     this.crossBoxConfig = await response.json();
     let laneLayerUrl: string = this.crossBoxConfig.layers.lane;
     // const configManager: ConfigManager = ConfigManager.getInstance();
     laneLayerUrl = laneLayerUrl.replace(
       /{gisServer}/i,
-      ConfigManager.getInstance().appConfig.map.gisServer
+      this.appConfig.map.gisServer
     );
     const laneLayer: FeatureLayer = new FeatureLayer({
       url: laneLayerUrl
@@ -271,20 +280,43 @@ export default class QueueLength {
     return line;
   }
 
-  private async getRandomVehicleSymbol() {
-    const vehicleSymbols: { name: string; styleName: string }[] = this
-      .crossBoxConfig.vehicleSymbols;
-    const random: number = Math.round(
-      Math.random() * (vehicleSymbols.length - 1)
-    );
-    const originalSymbol: WebStyleSymbol = new WebStyleSymbol(
-      vehicleSymbols[random]
-    );
-    return await originalSymbol.fetchSymbol();
+  private getRandomVehicleSymbol(): PointSymbol3D {
+    // const vehicleSymbols: { name: string; styleName: string }[] = this
+    //   .crossBoxConfig.vehicleSymbols;
+    // const random: number = Math.round(
+    //   Math.random() * (vehicleSymbols.length - 1)
+    // );
+    // const originalSymbol: WebStyleSymbol = new WebStyleSymbol(
+    //   vehicleSymbols[random]
+    // );
+    // return await originalSymbol.fetchSymbol();
+
+    const vehicleSymbols = this.crossBoxConfig.vehicleSymbols;
+    const random = Math.round(Math.random() * (vehicleSymbols.length - 1));
+    console.log(random, vehicleSymbols[random]);
+    const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
+      width: vehicleSymbols[random].symbolLayers[0].width,
+      height: vehicleSymbols[random].symbolLayers[0].height,
+      depth: vehicleSymbols[random].symbolLayers[0].depth,
+      anchor: vehicleSymbols[random].symbolLayers[0].anchor,
+      resource: {
+        href:
+          this.appConfig.viewerUrl +
+          "/" +
+          vehicleSymbols[random].symbolLayers[0].resource.href
+      }
+    });
+    let symbol: PointSymbol3D = new PointSymbol3D();
+    symbol.symbolLayers.add(objectSymbol3DLayer);
+    return symbol;
   }
 
   //设置车辆模型的车头朝向
-  private static setVehicleSymbolHeading(symbol: PointSymbol3D, pt1: Point, pt2: Point) {
+  private static setVehicleSymbolHeading(
+    symbol: PointSymbol3D,
+    pt1: Point,
+    pt2: Point
+  ) {
     pt1 = webMercatorUtils.geographicToWebMercator(pt1) as Point;
     pt2 = webMercatorUtils.geographicToWebMercator(pt2) as Point;
     let objectSymbolLayer: ObjectSymbol3DLayer = (symbol.symbolLayers.getItemAt(

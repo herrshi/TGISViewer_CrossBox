@@ -7,83 +7,339 @@
   "vehicleSymbols": [
     {
       "name": "Audi_A6",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.0351467895507813,
+          "height": 1.4624752110242845,
+          "depth": 4.88462387084961,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Audi_A6.glb"
+          }
+        }
+      ]
     },
     {
       "name": "BMW_3-Series",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.04721435546875,
+          "height": 1.4301548318564892,
+          "depth": 4.598784942626953,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/BMW_3-Series.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Bus",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 3.0681970214843752,
+          "height": 3.8428088855743407,
+          "depth": 12.059633178710937,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Bus.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Edge",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 1.9451983642578126,
+          "height": 2.0095659637451173,
+          "depth": 4.478161010742188,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Edge.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Expedition",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.3147667694091796,
+          "height": 1.9535235846042633,
+          "depth": 4.914863739013672,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Expedition.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_F-150",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.702128601074219,
+          "height": 2.0475303423404694,
+          "depth": 5.950264587402344,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_F-150.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Fiesta",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.293406524658203,
+          "height": 2.00733647942543,
+          "depth": 4.461966552734376,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Fiesta.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Focus_Hatchback",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 1.9495590209960938,
+          "height": 1.8952640581130982,
+          "depth": 4.418487548828125,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Focus_Hatchback.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Fusion",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.14484619140625,
+          "height": 1.693736144900322,
+          "depth": 4.993350219726562,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Fusion.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Mustang",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.0523501586914064,
+          "height": 1.4234765248373151,
+          "depth": 4.744812927246095,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Mustang.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Taurus",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.2448230743408204,
+          "height": 1.6336169558018447,
+          "depth": 5.144293212890625,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Taurus.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Transit_Commercial_Van",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 1.9975660705566407,
+          "height": 1.8384972578287126,
+          "depth": 4.323059234619141,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Transit_Commercial_Van.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Ford_Transit_Connect",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.3460787200927733,
+          "height": 2.1976012650132177,
+          "depth": 4.835228576660157,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Ford_Transit_Connect.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Mercedes_S-Class",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.2412454223632814,
+          "height": 1.583065630197525,
+          "depth": 5.347634582519531,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Mercedes_S-Class.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Porsche_Boxter",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.134391326904297,
+          "height": 1.4638603445887566,
+          "depth": 5.06810791015625,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Porsche_Boxter.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Porsche_Carrera",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.058708038330078,
+          "height": 1.3894725659210234,
+          "depth": 4.746471862792969,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Porsche_Carrera.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Taxi",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.208208541870117,
+          "height": 1.7303032332658768,
+          "depth": 5.413741149902344,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Taxi.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Tesla_P7",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.1542562866210937,
+          "height": 1.449798583984375,
+          "depth": 4.948473815917969,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Tesla_P7.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Toyota_Prius",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.0180626678466798,
+          "height": 1.5598575294017794,
+          "depth": 4.423426208496094,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Toyota_Prius.glb"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Van_Taxi",
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 1.5648219299316406,
+          "height": 1.4376743888854981,
+          "depth": 3.6825686645507814,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Van_Taxi.glb"
+          }
+        }
+      ]
     },
     {
       "name": "Volkswagen_Jetta_Wagon",
-      "styleName": "EsriRealisticTransportationStyle"
+      "type": "PointSymbol3D",
+      "symbolLayers": [
+        {
+          "type": "Object",
+          "width": 2.171666564941406,
+          "height": 1.6482508540153504,
+          "depth": 4.770531921386719,
+          "anchor": "origin",
+          "resource": {
+            "href": "app/assets/model/Volkswagen_Jetta_Wagon.glb"
+          }
+        }
+      ]
     }
   ]
 }

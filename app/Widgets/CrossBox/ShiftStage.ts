@@ -1,13 +1,10 @@
 import Map = require("esri/Map");
 import Graphic = require("esri/Graphic");
-import Point = require("esri/geometry/Point");
 import GraphicsLayer = require("esri/layers/GraphicsLayer");
 import MapImageLayer = require("esri/layers/MapImageLayer");
 import QueryTask = require("esri/tasks/QueryTask");
 import Query = require("esri/tasks/support/Query");
 import FeatureSet = require("esri/tasks/support/FeatureSet");
-import PictureMarkerSymbol = require("esri/symbols/PictureMarkerSymbol");
-import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
 import PointSymbol3D = require("esri/symbols/PointSymbol3D");
 import ObjectSymbol3DLayer = require("esri/symbols/ObjectSymbol3DLayer");
 
@@ -27,13 +24,7 @@ export default class ShiftStage {
 
   //相位线的图层
   private stagesLayer: MapImageLayer;
-  //信号灯Graphic
-  private signalLampGraphic: Array<Graphic>;
   readonly signalLampLayer: GraphicsLayer;
-  //车行灯高度
-  private readonly CAR_LAMP_HEIGHT = 10;
-  //人行灯高度
-  private readonly MAN_LAMP_HEIGHT = 5;
 
   private map: Map;
 
@@ -45,6 +36,8 @@ export default class ShiftStage {
 
     this.signalLampLayer = new GraphicsLayer();
     this.map.add(this.signalLampLayer);
+
+    this.getSignalLamps();
   }
 
   public async shiftStage(crossId: string, stage: string) {
@@ -55,11 +48,6 @@ export default class ShiftStage {
       0
     ).definitionExpression = `STAGES like '%${stage}%'`;
     this.stagesLayer.refresh();
-
-    if (!this.signalLampGraphic) {
-      await this.getSignalLamps();
-    }
-    // this.showSignalLampStage(stage);
   }
 
   private async createStageLayer() {
@@ -101,94 +89,37 @@ export default class ShiftStage {
     query.where = "1=1";
     const results: FeatureSet = await queryTask.execute(query);
     results.features.forEach(async (graphic: Graphic) => {
-      // const lampClass: string = graphic.attributes.LAMPCLASS;
       const lampAppClass: string = graphic.attributes.LAMPAPPCLASS;
       const symbolHeading: number = graphic.attributes.HEADING;
+
+      //根据信号灯类型用不同的symbol
+      let symbol: PointSymbol3D = new PointSymbol3D();
       if (lampAppClass === "4") {
-        const symbol: WebStyleSymbol = new WebStyleSymbol({
-          name: "Traffic_Light_3",
-          styleName: "EsriRealisticSignsandSignalsStyle"
+        //行人信号灯
+        const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
+          width: 0.35263153076171877 * 2,
+          height: 3.4637600708007814 * 3,
+          depth: 0.6094674301147461 * 2,
+          heading: symbolHeading,
+          resource: {href: this.appConfig.viewerUrl + "/app/assets/model/Traffic_Light_3.glb"}
         });
-        let walkSignalLampSymbol: PointSymbol3D = await symbol.fetchSymbol();
-        let objectSymbolLayer: ObjectSymbol3DLayer = (walkSignalLampSymbol.symbolLayers.getItemAt(
-          0
-        ) as ObjectSymbol3DLayer).clone();
-        // objectSymbolLayer.material = {color: "white"};
-        objectSymbolLayer.height *= 3;
-        objectSymbolLayer.width *= 2;
-        objectSymbolLayer.depth *= 2;
-        objectSymbolLayer.heading = symbolHeading;
-        walkSignalLampSymbol.symbolLayers.removeAll();
-        walkSignalLampSymbol.symbolLayers.add(objectSymbolLayer);
-        graphic.symbol = walkSignalLampSymbol;
+        symbol.symbolLayers.add(objectSymbol3DLayer);
       } else {
-        const symbol: WebStyleSymbol = new WebStyleSymbol({
-          name: "Traffic_Light_2",
-          styleName: "EsriRealisticSignsandSignalsStyle"
+        //车行信号灯
+        const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
+          width: 0.36740692138671877 * 2,
+          height: 6.0284796142578125 * 3,
+          depth: 6.792438163757324 * 2,
+          heading: symbolHeading,
+          resource: {href: this.appConfig.viewerUrl + "/app/assets/model/Traffic_Light_2.glb"}
         });
-        let carSignalLampSymbol: PointSymbol3D = await symbol.fetchSymbol();
-        let objectSymbolLayer: ObjectSymbol3DLayer = (carSignalLampSymbol.symbolLayers.getItemAt(
-          0
-        ) as ObjectSymbol3DLayer).clone();
-        // objectSymbolLayer.material = {color: "white"};
-        objectSymbolLayer.height *= 2;
-        objectSymbolLayer.width *= 2;
-        objectSymbolLayer.depth *= 2;
-        objectSymbolLayer.heading = symbolHeading;
-        carSignalLampSymbol.symbolLayers.removeAll();
-        carSignalLampSymbol.symbolLayers.add(objectSymbolLayer);
-        graphic.symbol = carSignalLampSymbol;
+        symbol.symbolLayers.add(objectSymbol3DLayer);
       }
+      graphic.symbol = symbol;
       this.signalLampLayer.add(graphic);
-      return graphic;
+      // return graphic;
     });
   }
 
-  private showSignalLampStage(stage: string) {
-    this.signalLampGraphic.forEach((graphic: Graphic) => {
-      const lampAppClass: string = graphic.attributes.LAMPAPPCLASS;
-      const greenStage: string = graphic.attributes.GREENSTAGE;
-      let picUrl: string;
-      let picWidth: string;
-      let picHeight: string;
-      switch (lampAppClass) {
-        case "1":
-          //机动车信号灯
-          if (greenStage.indexOf(stage) >= 0) {
-            picUrl = "/app/images/point_green.png";
-          } else {
-            picUrl = "/app/images/point_red.png";
-          }
-          picHeight = picWidth = "72px";
-          break;
 
-        case "4":
-          //人行横道信号灯
-          if (greenStage.indexOf(stage) >= 0) {
-            picUrl = "/app/images/Man_green.png";
-          } else {
-            picUrl = "/app/images/Man_red.png";
-          }
-          picHeight = picWidth = "36px";
-          break;
-
-        case "6":
-          //左转机动车信号灯
-          if (greenStage.indexOf(stage) >= 0) {
-            picUrl = "/app/images/TurnLeft_green.png";
-          } else {
-            picUrl = "/app/images/TurnLeft_red.png";
-          }
-          picHeight = picWidth = "72px";
-          break;
-      }
-
-      graphic.symbol = new PictureMarkerSymbol({
-        url: this.appConfig.viewerUrl + picUrl,
-        width: picWidth,
-        height: picHeight
-      });
-      this.signalLampLayer.add(graphic);
-    });
-  }
 }

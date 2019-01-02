@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/geometry/support/webMercatorUtils", "esri/symbols/WebStyleSymbol", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils", "app/Managers/ConfigManager"], function (require, exports, Graphic, geometryEngine, Point, Polygon, Polyline, GraphicsLayer, FeatureLayer, webMercatorUtils, WebStyleSymbol, MapManager_1, GeometryUtils_1, ConfigManager_1) {
+define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "esri/geometry/Point", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/geometry/support/webMercatorUtils", "esri/symbols/PointSymbol3D", "esri/symbols/ObjectSymbol3DLayer", "app/Managers/MapManager", "app/GeometryUtils/GeometryUtils", "app/Managers/ConfigManager"], function (require, exports, Graphic, geometryEngine, Point, Polygon, Polyline, GraphicsLayer, FeatureLayer, webMercatorUtils, PointSymbol3D, ObjectSymbol3DLayer, MapManager_1, GeometryUtils_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var QueueLength = /** @class */ (function () {
@@ -41,6 +41,7 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
             //车道中心线
             this.laneCenterLines = [];
             this.map = MapManager_1.default.getInstance().map;
+            this.appConfig = ConfigManager_1.default.getInstance().appConfig;
             this.graphicsLayer = new GraphicsLayer();
             this.map.add(this.graphicsLayer);
         }
@@ -170,13 +171,11 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
                             frontVehicleDistance = 0;
                             _b.label = 1;
                         case 1:
-                            if (!(frontVehicleDistance < queueData.queueLength)) return [3 /*break*/, 4];
-                            return [4 /*yield*/, this.getRandomVehicleSymbol()];
-                        case 2:
-                            vehicleSymbol = _b.sent();
+                            if (!(frontVehicleDistance < queueData.queueLength)) return [3 /*break*/, 3];
+                            vehicleSymbol = this.getRandomVehicleSymbol();
                             vehicleLength = vehicleSymbol.symbolLayers.getItemAt(0).depth;
                             return [4 /*yield*/, GeometryUtils_1.default.clipPolylineInLength(line.paths[0], frontVehicleDistance + vehicleLength / 2 + 1)];
-                        case 3:
+                        case 2:
                             path = _b.sent();
                             _a = path[path.length - 1], x = _a[0], y = _a[1];
                             vehiclePoint = new Point({
@@ -189,9 +188,9 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
                                 symbol: vehicleSymbol
                             });
                             this.graphicsLayer.add(vehicleGraphic);
-                            frontVehicleDistance += (vehicleLength + 1);
+                            frontVehicleDistance += vehicleLength + 1;
                             return [3 /*break*/, 1];
-                        case 4: return [2 /*return*/];
+                        case 3: return [2 /*return*/];
                     }
                 });
             });
@@ -235,7 +234,7 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
                 var response, _a, laneLayerUrl, laneLayer, query, laneFeatureSet;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
-                        case 0: return [4 /*yield*/, fetch(ConfigManager_1.default.getInstance().appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
+                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
                         case 1:
                             response = _b.sent();
                             _a = this;
@@ -244,7 +243,7 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
                             _a.crossBoxConfig = _b.sent();
                             laneLayerUrl = this.crossBoxConfig.layers.lane;
                             // const configManager: ConfigManager = ConfigManager.getInstance();
-                            laneLayerUrl = laneLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
+                            laneLayerUrl = laneLayerUrl.replace(/{gisServer}/i, this.appConfig.map.gisServer);
                             laneLayer = new FeatureLayer({
                                 url: laneLayerUrl
                             });
@@ -273,20 +272,32 @@ define(["require", "exports", "esri/Graphic", "esri/geometry/geometryEngine", "e
             return line;
         };
         QueueLength.prototype.getRandomVehicleSymbol = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var vehicleSymbols, random, originalSymbol;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            vehicleSymbols = this
-                                .crossBoxConfig.vehicleSymbols;
-                            random = Math.round(Math.random() * (vehicleSymbols.length - 1));
-                            originalSymbol = new WebStyleSymbol(vehicleSymbols[random]);
-                            return [4 /*yield*/, originalSymbol.fetchSymbol()];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                });
+            // const vehicleSymbols: { name: string; styleName: string }[] = this
+            //   .crossBoxConfig.vehicleSymbols;
+            // const random: number = Math.round(
+            //   Math.random() * (vehicleSymbols.length - 1)
+            // );
+            // const originalSymbol: WebStyleSymbol = new WebStyleSymbol(
+            //   vehicleSymbols[random]
+            // );
+            // return await originalSymbol.fetchSymbol();
+            var vehicleSymbols = this.crossBoxConfig.vehicleSymbols;
+            var random = Math.round(Math.random() * (vehicleSymbols.length - 1));
+            console.log(random, vehicleSymbols[random]);
+            var objectSymbol3DLayer = new ObjectSymbol3DLayer({
+                width: vehicleSymbols[random].symbolLayers[0].width,
+                height: vehicleSymbols[random].symbolLayers[0].height,
+                depth: vehicleSymbols[random].symbolLayers[0].depth,
+                anchor: vehicleSymbols[random].symbolLayers[0].anchor,
+                resource: {
+                    href: this.appConfig.viewerUrl +
+                        "/" +
+                        vehicleSymbols[random].symbolLayers[0].resource.href
+                }
             });
+            var symbol = new PointSymbol3D();
+            symbol.symbolLayers.add(objectSymbol3DLayer);
+            return symbol;
         };
         //设置车辆模型的车头朝向
         QueueLength.setVehicleSymbolHeading = function (symbol, pt1, pt2) {
