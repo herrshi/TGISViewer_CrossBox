@@ -281,19 +281,8 @@ export default class QueueLength {
   }
 
   private getRandomVehicleSymbol(): PointSymbol3D {
-    // const vehicleSymbols: { name: string; styleName: string }[] = this
-    //   .crossBoxConfig.vehicleSymbols;
-    // const random: number = Math.round(
-    //   Math.random() * (vehicleSymbols.length - 1)
-    // );
-    // const originalSymbol: WebStyleSymbol = new WebStyleSymbol(
-    //   vehicleSymbols[random]
-    // );
-    // return await originalSymbol.fetchSymbol();
-
     const vehicleSymbols = this.crossBoxConfig.vehicleSymbols;
     const random = Math.round(Math.random() * (vehicleSymbols.length - 1));
-    console.log(random, vehicleSymbols[random]);
     const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
       width: vehicleSymbols[random].symbolLayers[0].width,
       height: vehicleSymbols[random].symbolLayers[0].height,
