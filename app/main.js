@@ -65,12 +65,14 @@ define(["require", "exports", "app/Managers/ConfigManager", "app/Managers/MapMan
          * @param queueDatas
          * */
         Map.prototype.setCrossQueueLength = function (queueDatas) {
-            // const crossBox: CrossBox = CrossBox.getInstance();
             CrossBox_1.default.setQueueLength(queueDatas);
             // const labelFeature: LabelFeatureTest = LabelFeatureTest.getInstance();
         };
         Map.prototype.shiftStage = function (crossId, stage) {
             CrossBox_1.default.shiftStage(crossId, stage);
+        };
+        Map.prototype.showSignalLamps = function () {
+            CrossBox_1.default.showSignalLamps();
         };
         return Map;
     }());

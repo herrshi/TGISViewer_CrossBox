@@ -1,5 +1,6 @@
 import QueueLength from "app/Widgets/CrossBox/QueueLength";
 import ShiftStage from "app/Widgets/CrossBox/ShiftStage";
+import SignalLamp from "app/Widgets/CrossBox/SignalLamp";
 
 export default class CrossBox {
   // private queueLength: QueueLength;
@@ -15,9 +16,14 @@ export default class CrossBox {
     await queueLength.setQueueLength(queueDatas);
   }
 
-  public static shiftStage(crossId: string, stage: string) {
+  public static async shiftStage(crossId: string, stage: string) {
     const shiftStage: ShiftStage = ShiftStage.getInstance();
-    shiftStage.shiftStage(crossId, stage);
+    await shiftStage.shiftStage(crossId, stage);
+  }
+
+  public static async showSignalLamps() {
+    const signalLamp: SignalLamp = SignalLamp.getInstance();
+    await signalLamp.showSignalLamps();
   }
 
 }

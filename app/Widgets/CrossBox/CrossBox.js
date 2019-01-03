@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "app/Widgets/CrossBox/QueueLength", "app/Widgets/CrossBox/ShiftStage"], function (require, exports, QueueLength_1, ShiftStage_1) {
+define(["require", "exports", "app/Widgets/CrossBox/QueueLength", "app/Widgets/CrossBox/ShiftStage", "app/Widgets/CrossBox/SignalLamp"], function (require, exports, QueueLength_1, ShiftStage_1, SignalLamp_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var CrossBox = /** @class */ (function () {
@@ -59,8 +59,34 @@ define(["require", "exports", "app/Widgets/CrossBox/QueueLength", "app/Widgets/C
             });
         };
         CrossBox.shiftStage = function (crossId, stage) {
-            var shiftStage = ShiftStage_1.default.getInstance();
-            shiftStage.shiftStage(crossId, stage);
+            return __awaiter(this, void 0, void 0, function () {
+                var shiftStage;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            shiftStage = ShiftStage_1.default.getInstance();
+                            return [4 /*yield*/, shiftStage.shiftStage(crossId, stage)];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        CrossBox.showSignalLamps = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var signalLamp;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            signalLamp = SignalLamp_1.default.getInstance();
+                            return [4 /*yield*/, signalLamp.showSignalLamps()];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            });
         };
         return CrossBox;
     }());

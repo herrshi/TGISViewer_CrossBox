@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImageLayer", "esri/tasks/QueryTask", "esri/tasks/support/Query", "esri/symbols/PointSymbol3D", "esri/symbols/ObjectSymbol3DLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, GraphicsLayer, MapImageLayer, QueryTask, Query, PointSymbol3D, ObjectSymbol3DLayer, MapManager_1, ConfigManager_1) {
+define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImageLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, GraphicsLayer, MapImageLayer, MapManager_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ShiftStage = /** @class */ (function () {
@@ -42,7 +42,6 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImage
             this.appConfig = ConfigManager_1.default.getInstance().appConfig;
             this.signalLampLayer = new GraphicsLayer();
             this.map.add(this.signalLampLayer);
-            this.getSignalLamps();
         }
         ShiftStage.getInstance = function () {
             if (!this.instance) {
@@ -86,66 +85,6 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImage
                             });
                             this.map.add(this.stagesLayer);
                             return [2 /*return*/, this.stagesLayer.when()];
-                    }
-                });
-            });
-        };
-        ShiftStage.prototype.getSignalLamps = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var response, crossBoxConfig, signalLampLayerUrl, queryTask, query, results;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
-                        case 1:
-                            response = _a.sent();
-                            return [4 /*yield*/, response.json()];
-                        case 2:
-                            crossBoxConfig = _a.sent();
-                            signalLampLayerUrl = crossBoxConfig.layers.signalLamp;
-                            signalLampLayerUrl = signalLampLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
-                            queryTask = new QueryTask({
-                                url: signalLampLayerUrl
-                            });
-                            query = new Query();
-                            query.returnGeometry = true;
-                            query.outFields = ["*"];
-                            query.where = "1=1";
-                            return [4 /*yield*/, queryTask.execute(query)];
-                        case 3:
-                            results = _a.sent();
-                            results.features.forEach(function (graphic) { return __awaiter(_this, void 0, void 0, function () {
-                                var lampAppClass, symbolHeading, symbol, objectSymbol3DLayer, objectSymbol3DLayer;
-                                return __generator(this, function (_a) {
-                                    lampAppClass = graphic.attributes.LAMPAPPCLASS;
-                                    symbolHeading = graphic.attributes.HEADING;
-                                    symbol = new PointSymbol3D();
-                                    if (lampAppClass === "4") {
-                                        objectSymbol3DLayer = new ObjectSymbol3DLayer({
-                                            width: 0.35263153076171877 * 2,
-                                            height: 3.4637600708007814 * 3,
-                                            depth: 0.6094674301147461 * 2,
-                                            heading: symbolHeading,
-                                            resource: { href: this.appConfig.viewerUrl + "/app/assets/model/Traffic_Light_3.glb" }
-                                        });
-                                        symbol.symbolLayers.add(objectSymbol3DLayer);
-                                    }
-                                    else {
-                                        objectSymbol3DLayer = new ObjectSymbol3DLayer({
-                                            width: 0.36740692138671877 * 2,
-                                            height: 6.0284796142578125 * 3,
-                                            depth: 6.792438163757324 * 2,
-                                            heading: symbolHeading,
-                                            resource: { href: this.appConfig.viewerUrl + "/app/assets/model/Traffic_Light_2.glb" }
-                                        });
-                                        symbol.symbolLayers.add(objectSymbol3DLayer);
-                                    }
-                                    graphic.symbol = symbol;
-                                    this.signalLampLayer.add(graphic);
-                                    return [2 /*return*/];
-                                });
-                            }); });
-                            return [2 /*return*/];
                     }
                 });
             });

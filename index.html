@@ -55,6 +55,7 @@
     });
     map.createMap().then( () => {
       console.log("map create finish.");
+      map.showSignalLamps();
       let currentStage = "A";
       map.shiftStage("", currentStage);
       setInterval(() => {
