@@ -55,7 +55,9 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                 var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
+                        case 0:
+                            this.signalLampGraphics = [];
+                            return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
                         case 1:
                             response = _a.sent();
                             return [4 /*yield*/, response.json()];
@@ -74,45 +76,15 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                         case 3:
                             results = _a.sent();
                             results.features.forEach(function (graphic) { return __awaiter(_this, void 0, void 0, function () {
-                                var lampAppClass, symbolHeading, symbol, objectSymbol3DLayer, objectSymbol3DLayer;
                                 return __generator(this, function (_a) {
-                                    lampAppClass = graphic.attributes.LAMPAPPCLASS;
-                                    symbolHeading = graphic.attributes.HEADING;
-                                    graphic.attributes.normal = true;
-                                    symbol = new PointSymbol3D();
-                                    if (lampAppClass === "4") {
-                                        objectSymbol3DLayer = new ObjectSymbol3DLayer({
-                                            width: 0.7,
-                                            height: 10.2,
-                                            depth: 1.2,
-                                            heading: symbolHeading,
-                                            resource: {
-                                                href: this.appConfig.viewerUrl +
-                                                    "/app/assets/model/Traffic_Light_3.glb"
-                                            }
-                                        });
-                                        symbol.symbolLayers.add(objectSymbol3DLayer);
-                                    }
-                                    else {
-                                        objectSymbol3DLayer = new ObjectSymbol3DLayer({
-                                            width: 0.7,
-                                            height: 18,
-                                            depth: 13.58,
-                                            heading: symbolHeading,
-                                            material: undefined,
-                                            resource: {
-                                                href: this.appConfig.viewerUrl +
-                                                    "/app/assets/model/Traffic_Light_2.glb"
-                                            }
-                                        });
-                                        symbol.symbolLayers.add(objectSymbol3DLayer);
-                                    }
-                                    graphic.symbol = symbol;
+                                    graphic.attributes.state = "normal";
+                                    this.setSymbol(graphic);
                                     this.signalLampLayer.add(graphic);
+                                    this.signalLampGraphics.push(graphic);
                                     return [2 /*return*/];
                                 });
                             }); });
-                            return [4 /*yield*/, this.updateSignalLampSymbol()];
+                            return [4 /*yield*/, this.updateSignalLampsSymbol()];
                         case 4:
                             _a.sent();
                             return [2 /*return*/];
@@ -134,15 +106,16 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                 });
             });
         };
-        SignalLamp.prototype.updateSignalLampSymbol = function () {
+        SignalLamp.prototype.updateSignalLampsSymbol = function () {
             return __awaiter(this, void 0, void 0, function () {
                 var lampStates;
+                var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, this.getSignalLampState()];
                         case 1:
                             lampStates = _a.sent();
-                            this.signalLampLayer.graphics.forEach(function (lampGraphic) {
+                            this.signalLampGraphics.forEach(function (lampGraphic) {
                                 //地图上一个机动车灯模型包含多个信号灯
                                 //模型id: 设备代码-信号灯编号1|信号灯编号2|, ..., |信号灯编号n
                                 //有一个信号灯状态异常就用红色
@@ -151,25 +124,64 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                                 var SBBH = featureIdArray[0];
                                 var lampId = featureIdArray[1];
                                 var lampIds = lampId.split("|");
-                                var normal = true;
+                                var state = "normal";
                                 lampIds.forEach(function (lampId) {
                                     for (var i = 0; i < lampStates.length; i++) {
                                         if (lampStates[i].sbbh === SBBH &&
                                             String(lampStates[i].xhdbh) === lampId &&
                                             (lampStates[i].xhdtxzt != 1 || lampStates[i].xhdgzzt != 1)) {
-                                            normal = false;
+                                            state = "abnormal";
                                             break;
                                         }
                                     }
                                 });
-                                //设置红色
-                                if (!normal) {
+                                if (lampGraphic.attributes.state != state) {
+                                    _this.signalLampLayer.remove(lampGraphic);
+                                    var newGraphic = lampGraphic.clone();
+                                    newGraphic.attributes.state = state;
+                                    _this.setSymbol(newGraphic);
+                                    _this.signalLampLayer.add(newGraphic);
                                 }
                             });
                             return [2 /*return*/];
                     }
                 });
             });
+        };
+        SignalLamp.prototype.setSymbol = function (graphic) {
+            //根据信号灯类型用不同的symbol
+            var symbol = new PointSymbol3D();
+            if (graphic.attributes.LAMPAPPCLASS === "4") {
+                //行人信号灯
+                var objectSymbol3DLayer = new ObjectSymbol3DLayer({
+                    width: 0.7,
+                    height: 10.2,
+                    depth: 1.2,
+                    heading: graphic.attributes.HEADING,
+                    material: graphic.attributes.state === "normal" ? undefined : { color: [235, 97, 228] },
+                    resource: {
+                        href: this.appConfig.viewerUrl +
+                            "/app/assets/model/Traffic_Light_3.glb"
+                    }
+                });
+                symbol.symbolLayers.add(objectSymbol3DLayer);
+            }
+            else {
+                //车行信号灯
+                var objectSymbol3DLayer = new ObjectSymbol3DLayer({
+                    width: 0.7,
+                    height: 18,
+                    depth: 13.58,
+                    heading: graphic.attributes.HEADING,
+                    material: graphic.attributes.state === "normal" ? undefined : { color: "red" },
+                    resource: {
+                        href: this.appConfig.viewerUrl +
+                            "/app/assets/model/Traffic_Light_2.glb"
+                    }
+                });
+                symbol.symbolLayers.add(objectSymbol3DLayer);
+            }
+            graphic.symbol = symbol;
         };
         return SignalLamp;
     }());

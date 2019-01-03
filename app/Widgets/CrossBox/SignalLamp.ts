@@ -22,6 +22,7 @@ export default class SignalLamp {
   }
 
   readonly signalLampLayer: GraphicsLayer;
+  private signalLampGraphics: Array<Graphic>;
 
   private map: Map;
 
@@ -36,6 +37,8 @@ export default class SignalLamp {
   }
 
   public async showSignalLamps() {
+    this.signalLampGraphics = [];
+
     //信号灯图层地址
     const response = await fetch(
       this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json"
@@ -57,51 +60,14 @@ export default class SignalLamp {
     query.where = "1=1";
     const results: FeatureSet = await queryTask.execute(query);
     results.features.forEach(async (graphic: Graphic) => {
-      const lampAppClass: string = graphic.attributes.LAMPAPPCLASS;
-      const symbolHeading: number = graphic.attributes.HEADING;
-      graphic.attributes.normal = true;
+      graphic.attributes.state = "normal";
+      this.setSymbol(graphic);
 
-      //根据信号灯类型用不同的symbol
-      let symbol: PointSymbol3D = new PointSymbol3D();
-      if (lampAppClass === "4") {
-        //行人信号灯
-        const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
-          {
-            width: 0.7,
-            height: 10.2,
-            depth: 1.2,
-            heading: symbolHeading,
-            resource: {
-              href:
-                this.appConfig.viewerUrl +
-                "/app/assets/model/Traffic_Light_3.glb"
-            }
-          }
-        );
-        symbol.symbolLayers.add(objectSymbol3DLayer);
-      } else {
-        //车行信号灯
-        const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
-          {
-            width: 0.7,
-            height: 18,
-            depth: 13.58,
-            heading: symbolHeading,
-            material: undefined,
-            resource: {
-              href:
-                this.appConfig.viewerUrl +
-                "/app/assets/model/Traffic_Light_2.glb"
-            }
-          }
-        );
-        symbol.symbolLayers.add(objectSymbol3DLayer);
-      }
-      graphic.symbol = symbol;
       this.signalLampLayer.add(graphic);
+      this.signalLampGraphics.push(graphic);
     });
 
-    await this.updateSignalLampSymbol();
+    await this.updateSignalLampsSymbol();
   }
 
   private async getSignalLampState() {
@@ -111,9 +77,9 @@ export default class SignalLamp {
     return await response.json();
   }
 
-  private async updateSignalLampSymbol() {
+  private async updateSignalLampsSymbol() {
     const lampStates: any[] = await this.getSignalLampState();
-    this.signalLampLayer.graphics.forEach(lampGraphic => {
+    this.signalLampGraphics.forEach(lampGraphic => {
       //地图上一个机动车灯模型包含多个信号灯
       //模型id: 设备代码-信号灯编号1|信号灯编号2|, ..., |信号灯编号n
       //有一个信号灯状态异常就用红色
@@ -122,7 +88,7 @@ export default class SignalLamp {
       const SBBH: string = featureIdArray[0];
       const lampId: string = featureIdArray[1];
       const lampIds: string[] = lampId.split("|");
-      let normal = true;
+      let state = "normal";
       lampIds.forEach(lampId => {
         for (let i = 0; i < lampStates.length; i++) {
           if (
@@ -130,16 +96,63 @@ export default class SignalLamp {
             String(lampStates[i].xhdbh) === lampId &&
             (lampStates[i].xhdtxzt != 1 || lampStates[i].xhdgzzt != 1)
           ) {
-            normal = false;
+            state = "abnormal";
             break;
           }
         }
       });
 
-      //设置红色
-      if (!normal) {
+      if (lampGraphic.attributes.state != state) {
+        this.signalLampLayer.remove(lampGraphic);
+        let newGraphic = lampGraphic.clone();
+        newGraphic.attributes.state = state;
+        this.setSymbol(newGraphic);
+        this.signalLampLayer.add(newGraphic);
 
       }
     });
+  }
+
+  private setSymbol(graphic: Graphic) {
+    //根据信号灯类型用不同的symbol
+    let symbol: PointSymbol3D = new PointSymbol3D();
+    if (graphic.attributes.LAMPAPPCLASS === "4") {
+      //行人信号灯
+      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
+        {
+          width: 0.7,
+          height: 10.2,
+          depth: 1.2,
+          heading: graphic.attributes.HEADING,
+          material:
+            graphic.attributes.state === "normal" ? undefined : { color: [235, 97, 228] },
+          resource: {
+            href:
+              this.appConfig.viewerUrl +
+              "/app/assets/model/Traffic_Light_3.glb"
+          }
+        }
+      );
+      symbol.symbolLayers.add(objectSymbol3DLayer);
+    } else {
+      //车行信号灯
+      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
+        {
+          width: 0.7,
+          height: 18,
+          depth: 13.58,
+          heading: graphic.attributes.HEADING,
+          material:
+            graphic.attributes.state === "normal" ? undefined : { color: "red" },
+          resource: {
+            href:
+              this.appConfig.viewerUrl +
+              "/app/assets/model/Traffic_Light_2.glb"
+          }
+        }
+      );
+      symbol.symbolLayers.add(objectSymbol3DLayer);
+    }
+    graphic.symbol = symbol;
   }
 }
