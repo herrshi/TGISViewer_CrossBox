@@ -2,7 +2,8 @@
   "layers": {
     "lane": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/4",
     "stage": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_Stages/MapServer",
-    "signalLamp": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/5"
+    "signalLamp": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/5",
+    "stageLabel": "http://{gisServer}/arcgis/rest/services/XuHui/XuHui_cross/MapServer/8"
   },
   "vehicleSymbols": [
     {

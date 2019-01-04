@@ -129,6 +129,7 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                                     for (var i = 0; i < lampStates.length; i++) {
                                         if (lampStates[i].sbbh === SBBH &&
                                             String(lampStates[i].xhdbh) === lampId &&
+                                            //通讯状态和工作状态有一个异常就报警
                                             (lampStates[i].xhdtxzt != 1 || lampStates[i].xhdgzzt != 1)) {
                                             state = "abnormal";
                                             break;
@@ -158,7 +159,7 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                     height: 10.2,
                     depth: 1.2,
                     heading: graphic.attributes.HEADING,
-                    material: graphic.attributes.state === "normal" ? undefined : { color: [235, 97, 228] },
+                    material: graphic.attributes.state === "normal" ? undefined : { color: "red" },
                     resource: {
                         href: this.appConfig.viewerUrl +
                             "/app/assets/model/Traffic_Light_3.glb"

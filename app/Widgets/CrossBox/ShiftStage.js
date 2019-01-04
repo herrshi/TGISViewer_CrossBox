@@ -33,15 +33,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImageLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, GraphicsLayer, MapImageLayer, MapManager_1, ConfigManager_1) {
+define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, MapImageLayer, FeatureLayer, MapManager_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ShiftStage = /** @class */ (function () {
         function ShiftStage() {
             this.map = MapManager_1.default.getInstance().map;
             this.appConfig = ConfigManager_1.default.getInstance().appConfig;
-            this.signalLampLayer = new GraphicsLayer();
-            this.map.add(this.signalLampLayer);
         }
         ShiftStage.getInstance = function () {
             if (!this.instance) {
@@ -69,22 +67,70 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/layers/MapImage
         };
         ShiftStage.prototype.createStageLayer = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var response, crossBoxConfig, stageLayerUrl;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
+                var response, _a, stageLayerUrl;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            if (!!this.crossBoxConfig) return [3 /*break*/, 3];
+                            return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
                         case 1:
-                            response = _a.sent();
+                            response = _b.sent();
+                            _a = this;
                             return [4 /*yield*/, response.json()];
                         case 2:
-                            crossBoxConfig = _a.sent();
-                            stageLayerUrl = crossBoxConfig.layers.stage;
-                            stageLayerUrl = stageLayerUrl.replace(/{gisServer}/i, ConfigManager_1.default.getInstance().appConfig.map.gisServer);
+                            _a.crossBoxConfig = _b.sent();
+                            _b.label = 3;
+                        case 3:
+                            stageLayerUrl = this.crossBoxConfig.layers.stage;
+                            stageLayerUrl = stageLayerUrl.replace(/{gisServer}/i, this.appConfig.map.gisServer);
                             this.stagesLayer = new MapImageLayer({
                                 url: stageLayerUrl
                             });
                             this.map.add(this.stagesLayer);
                             return [2 /*return*/, this.stagesLayer.when()];
+                    }
+                });
+            });
+        };
+        /**显示相位名称*/
+        ShiftStage.prototype.showStageLabel = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!!this.stageLabelLayer) return [3 /*break*/, 2];
+                            return [4 /*yield*/, this.createLabelLayer()];
+                        case 1:
+                            _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        ShiftStage.prototype.createLabelLayer = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var response, _a, labelLayerUrl;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            if (!!this.crossBoxConfig) return [3 /*break*/, 3];
+                            return [4 /*yield*/, fetch(this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json")];
+                        case 1:
+                            response = _b.sent();
+                            _a = this;
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            _a.crossBoxConfig = _b.sent();
+                            _b.label = 3;
+                        case 3:
+                            labelLayerUrl = this.crossBoxConfig.layers.stateLabel;
+                            labelLayerUrl = labelLayerUrl.replace(/{gisServer}/i, this.appConfig.map.gisServer);
+                            this.stageLabelLayer = new FeatureLayer({
+                                url: labelLayerUrl
+                            });
+                            this.map.add(this.stageLabelLayer);
+                            return [2 /*return*/, this.stageLabelLayer.when()];
                     }
                 });
             });

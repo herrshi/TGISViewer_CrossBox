@@ -1,6 +1,6 @@
 import Map = require("esri/Map");
-import GraphicsLayer = require("esri/layers/GraphicsLayer");
 import MapImageLayer = require("esri/layers/MapImageLayer");
+import FeatureLayer = require("esri/layers/FeatureLayer");
 
 import MapManager from "app/Managers/MapManager";
 import ConfigManager from "app/Managers/ConfigManager";
@@ -18,18 +18,17 @@ export default class ShiftStage {
 
   //相位线的图层
   private stagesLayer: MapImageLayer;
-  readonly signalLampLayer: GraphicsLayer;
+  //相位标注图层
+  private stageLabelLayer: FeatureLayer;
 
   private map: Map;
 
   private appConfig: any;
+  private crossBoxConfig: any;
 
   constructor() {
     this.map = MapManager.getInstance().map;
     this.appConfig = ConfigManager.getInstance().appConfig;
-
-    this.signalLampLayer = new GraphicsLayer();
-    this.map.add(this.signalLampLayer);
   }
 
   public async shiftStage(crossId: string, stage: string) {
@@ -43,19 +42,49 @@ export default class ShiftStage {
   }
 
   private async createStageLayer() {
-    const response = await fetch(
-      this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json"
-    );
-    const crossBoxConfig = await response.json();
-    let stageLayerUrl: string = crossBoxConfig.layers.stage;
+    if (!this.crossBoxConfig) {
+      const response = await fetch(
+        this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json"
+      );
+      this.crossBoxConfig = await response.json();
+    }
+
+    let stageLayerUrl: string = this.crossBoxConfig.layers.stage;
     stageLayerUrl = stageLayerUrl.replace(
       /{gisServer}/i,
-      ConfigManager.getInstance().appConfig.map.gisServer
+      this.appConfig.map.gisServer
     );
     this.stagesLayer = new MapImageLayer({
       url: stageLayerUrl
     });
     this.map.add(this.stagesLayer);
     return this.stagesLayer.when();
+  }
+
+  /**显示相位名称*/
+  private async showStageLabel() {
+    if (!this.stageLabelLayer) {
+      await this.createLabelLayer();
+    }
+  }
+
+  private async createLabelLayer() {
+    if (!this.crossBoxConfig) {
+      const response = await fetch(
+        this.appConfig.viewerUrl + "/app/Widgets/CrossBox/config.json"
+      );
+      this.crossBoxConfig = await response.json();
+    }
+
+    let labelLayerUrl: string = this.crossBoxConfig.layers.stateLabel;
+    labelLayerUrl = labelLayerUrl.replace(
+      /{gisServer}/i,
+      this.appConfig.map.gisServer
+    );
+    this.stageLabelLayer = new FeatureLayer({
+      url: labelLayerUrl
+    });
+    this.map.add(this.stageLabelLayer);
+    return this.stageLabelLayer.when();
   }
 }

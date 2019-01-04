@@ -94,6 +94,7 @@ export default class SignalLamp {
           if (
             lampStates[i].sbbh === SBBH &&
             String(lampStates[i].xhdbh) === lampId &&
+            //通讯状态和工作状态有一个异常就报警
             (lampStates[i].xhdtxzt != 1 || lampStates[i].xhdgzzt != 1)
           ) {
             state = "abnormal";
@@ -125,7 +126,7 @@ export default class SignalLamp {
           depth: 1.2,
           heading: graphic.attributes.HEADING,
           material:
-            graphic.attributes.state === "normal" ? undefined : { color: [235, 97, 228] },
+            graphic.attributes.state === "normal" ? undefined : { color: "red" },
           resource: {
             href:
               this.appConfig.viewerUrl +
