@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, MapImageLayer, FeatureLayer, MapManager_1, ConfigManager_1) {
+define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureLayer", "esri/layers/support/LabelClass", "esri/symbols/LabelSymbol3D", "esri/symbols/TextSymbol3DLayer", "esri/renderers/SimpleRenderer", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/Font", "app/Managers/MapManager", "app/Managers/ConfigManager"], function (require, exports, MapImageLayer, FeatureLayer, LabelClass, LabelSymbol3D, TextSymbol3DLayer, SimpleRenderer, SimpleMarkerSymbol, Font, MapManager_1, ConfigManager_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ShiftStage = /** @class */ (function () {
@@ -51,13 +51,15 @@ define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureL
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0:
-                            if (!!this.stagesLayer) return [3 /*break*/, 2];
-                            return [4 /*yield*/, this.createStageLayer()];
+                        case 0: return [4 /*yield*/, this.showStageLabel(crossId, stage)];
                         case 1:
                             _a.sent();
-                            _a.label = 2;
+                            if (!!this.stagesLayer) return [3 /*break*/, 3];
+                            return [4 /*yield*/, this.createStageLayer()];
                         case 2:
+                            _a.sent();
+                            _a.label = 3;
+                        case 3:
                             this.stagesLayer.findSublayerById(0).definitionExpression = "STAGES like '%" + stage + "%'";
                             this.stagesLayer.refresh();
                             return [2 /*return*/];
@@ -92,9 +94,10 @@ define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureL
                 });
             });
         };
-        /**显示相位名称*/
-        ShiftStage.prototype.showStageLabel = function () {
+        /**在路口中心显示相位名称*/
+        ShiftStage.prototype.showStageLabel = function (crossId, stage) {
             return __awaiter(this, void 0, void 0, function () {
+                var crossGraphic;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -103,14 +106,24 @@ define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureL
                         case 1:
                             _a.sent();
                             _a.label = 2;
-                        case 2: return [2 /*return*/];
+                        case 2:
+                            crossGraphic = this.stageLabelLayer.source.find(function (graphic) {
+                                return graphic.attributes.FEATUREID === crossId;
+                            });
+                            if (crossGraphic) {
+                                crossGraphic.attributes.stage = stage;
+                                this.stageLabelLayer.applyEdits({
+                                    updateFeatures: [crossGraphic]
+                                });
+                            }
+                            return [2 /*return*/];
                     }
                 });
             });
         };
         ShiftStage.prototype.createLabelLayer = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var response, _a, labelLayerUrl;
+                var response, _a, labelClass, labelLayerUrl, sourceLayer, query, result, graphics;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
@@ -124,13 +137,79 @@ define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureL
                             _a.crossBoxConfig = _b.sent();
                             _b.label = 3;
                         case 3:
-                            labelLayerUrl = this.crossBoxConfig.layers.stateLabel;
+                            labelClass = new LabelClass({
+                                symbol: new LabelSymbol3D({
+                                    symbolLayers: [
+                                        new TextSymbol3DLayer({
+                                            material: { color: [85, 255, 0] },
+                                            size: 20,
+                                            font: new Font({
+                                                weight: "bold"
+                                            })
+                                        })
+                                    ]
+                                }),
+                                labelExpressionInfo: {
+                                    expression: "$feature.stage"
+                                },
+                                labelPlacement: "above-center"
+                            });
+                            labelLayerUrl = this.crossBoxConfig.layers.stageLabel;
                             labelLayerUrl = labelLayerUrl.replace(/{gisServer}/i, this.appConfig.map.gisServer);
-                            this.stageLabelLayer = new FeatureLayer({
+                            sourceLayer = new FeatureLayer({
                                 url: labelLayerUrl
                             });
+                            query = sourceLayer.createQuery();
+                            query.outFields = ["*"];
+                            return [4 /*yield*/, sourceLayer.queryFeatures(query)];
+                        case 4:
+                            result = _b.sent();
+                            graphics = result.features;
+                            //给所有路口点加上stage属性
+                            graphics.forEach(function (graphic) {
+                                graphic.attributes.stage = "";
+                            });
+                            this.stageLabelLayer = new FeatureLayer({
+                                source: graphics,
+                                objectIdField: "OBJECTID",
+                                fields: [
+                                    {
+                                        name: "OBJECTID",
+                                        alias: "OBJECTID",
+                                        type: "oid"
+                                    },
+                                    {
+                                        name: "FEATUREID",
+                                        alias: "FEATUREID",
+                                        type: "string"
+                                    },
+                                    {
+                                        name: "FEATURENAME",
+                                        alias: "FEATURENAME",
+                                        type: "string"
+                                    },
+                                    {
+                                        name: "FEATURETYPE",
+                                        alias: "FEATURETYPE",
+                                        type: "string"
+                                    },
+                                    {
+                                        name: "stage",
+                                        alias: "stage",
+                                        type: "string"
+                                    }
+                                ],
+                                renderer: new SimpleRenderer({
+                                    symbol: new SimpleMarkerSymbol({
+                                        style: "circle",
+                                        size: 0
+                                    })
+                                }),
+                                outFields: ["*"],
+                                labelingInfo: [labelClass]
+                            });
                             this.map.add(this.stageLabelLayer);
-                            return [2 /*return*/, this.stageLabelLayer.when()];
+                            return [2 /*return*/];
                     }
                 });
             });

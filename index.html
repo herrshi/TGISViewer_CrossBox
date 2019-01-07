@@ -57,7 +57,7 @@
       console.log("map create finish.");
       map.showSignalLamps();
       let currentStage = "A";
-      map.shiftStage("", currentStage);
+      map.shiftStage("31010400001", currentStage);
       setInterval(() => {
         if (currentStage === "A") {
           currentStage = "B";
@@ -68,54 +68,54 @@
         } else if (currentStage === "D") {
           currentStage = "A";
         }
-        map.shiftStage("", currentStage);
+        map.shiftStage("31010400001", currentStage);
 
-        // map.setCrossQueueLength([
-        //   {
-        //     laneId: "001-0-1",
-        //     queueLength: 10
-        //   },
-        //   {
-        //     laneId: "001-0-2",
-        //     queueLength: 30
-        //   },
-        //   {
-        //     laneId: "001-0-3",
-        //     queueLength: 12
-        //   },
-        //   {
-        //     laneId: "001-0-4",
-        //     queueLength: 21
-        //   },
-        //   {
-        //     laneId: "001-0-6",
-        //     queueLength: 5
-        //   },
-        //   {
-        //     laneId: "001-0-7",
-        //     queueLength: 8
-        //   },
-        //   {
-        //     laneId: "001-2-1",
-        //     queueLength: 10
-        //   },
-        //   {
-        //     laneId: "001-2-2",
-        //     queueLength: 30
-        //   },
-        //   {
-        //     laneId: "001-2-3",
-        //     queueLength: 12
-        //   },
-        //   {
-        //     laneId: "001-2-4",
-        //     queueLength: 21
-        //   },
-        //   {
-        //     laneId: "001-2-6",
-        //     queueLength: 5
-        //   }
-        // ]);
+        map.setCrossQueueLength([
+          {
+            laneId: "001-0-1",
+            queueLength: 10
+          },
+          {
+            laneId: "001-0-2",
+            queueLength: 30
+          },
+          {
+            laneId: "001-0-3",
+            queueLength: 12
+          },
+          {
+            laneId: "001-0-4",
+            queueLength: 21
+          },
+          {
+            laneId: "001-0-6",
+            queueLength: 5
+          },
+          {
+            laneId: "001-0-7",
+            queueLength: 8
+          },
+          {
+            laneId: "001-2-1",
+            queueLength: 10
+          },
+          {
+            laneId: "001-2-2",
+            queueLength: 30
+          },
+          {
+            laneId: "001-2-3",
+            queueLength: 12
+          },
+          {
+            laneId: "001-2-4",
+            queueLength: 21
+          },
+          {
+            laneId: "001-2-6",
+            queueLength: 5
+          }
+        ]);
       }, 10000);
 
 
