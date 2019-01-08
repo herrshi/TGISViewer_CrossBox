@@ -76,8 +76,19 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                         case 3:
                             results = _a.sent();
                             results.features.forEach(function (graphic) { return __awaiter(_this, void 0, void 0, function () {
+                                var lampStages, stageArray, stages;
                                 return __generator(this, function (_a) {
-                                    graphic.attributes.state = "normal";
+                                    lampStages = graphic.getAttribute("STAGES");
+                                    stageArray = lampStages.split("|");
+                                    stages = [];
+                                    stageArray.forEach(function (stage) {
+                                        var stageContent = stage.split("-");
+                                        var stageName = stageContent[0];
+                                        var modelName = stageContent[1];
+                                        stages.push({ stageName: stageName, modelName: modelName });
+                                    });
+                                    graphic.setAttribute("ParsedStages", stages);
+                                    graphic.setAttribute("state", "normal");
                                     this.setSymbol(graphic);
                                     this.signalLampLayer.add(graphic);
                                     this.signalLampGraphics.push(graphic);
@@ -149,7 +160,17 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                 });
             });
         };
-        SignalLamp.prototype.setSymbol = function (graphic) {
+        SignalLamp.prototype.setSymbol = function (graphic, stage) {
+            if (stage === void 0) { stage = "A"; }
+            var stages = graphic.getAttribute("ParsedStages");
+            var modelName = "0";
+            stages.forEach(function (stageData) {
+                console.log(stageData);
+                if (stageData.stageName === stage) {
+                    modelName = stageData.modelName;
+                }
+            });
+            console.log(modelName);
             //根据信号灯类型用不同的symbol
             var symbol = new PointSymbol3D();
             if (graphic.attributes.LAMPAPPCLASS === "4") {
@@ -161,8 +182,7 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                     heading: graphic.attributes.HEADING,
                     material: graphic.attributes.state === "normal" ? undefined : { color: "red" },
                     resource: {
-                        href: this.appConfig.viewerUrl +
-                            "/app/assets/model/Traffic_Light_3.glb"
+                        href: this.appConfig.viewerUrl + ("/app/assets/models/Traffic_Light_Man_" + modelName + ".glb")
                     }
                 });
                 symbol.symbolLayers.add(objectSymbol3DLayer);
@@ -176,8 +196,7 @@ define(["require", "exports", "esri/layers/GraphicsLayer", "esri/tasks/QueryTask
                     heading: graphic.attributes.HEADING,
                     material: graphic.attributes.state === "normal" ? undefined : { color: "red" },
                     resource: {
-                        href: this.appConfig.viewerUrl +
-                            "/app/assets/model/Traffic_Light_2.glb"
+                        href: this.appConfig.viewerUrl + ("/app/assets/models/Traffic_Light_Vehicle_" + modelName + ".glb")
                     }
                 });
                 symbol.symbolLayers.add(objectSymbol3DLayer);

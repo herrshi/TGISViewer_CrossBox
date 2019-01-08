@@ -17,7 +17,7 @@
           "depth": 4.88462387084961,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Audi_A6.glb"
+            "href": "app/assets/models/Audi_A6.glb"
           }
         }
       ]
@@ -33,7 +33,7 @@
           "depth": 4.598784942626953,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/BMW_3-Series.glb"
+            "href": "app/assets/models/BMW_3-Series.glb"
           }
         }
       ]
@@ -49,7 +49,7 @@
           "depth": 12.059633178710937,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Bus.glb"
+            "href": "app/assets/models/Bus.glb"
           }
         }
       ]
@@ -65,7 +65,7 @@
           "depth": 4.478161010742188,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Edge.glb"
+            "href": "app/assets/models/Ford_Edge.glb"
           }
         }
       ]
@@ -81,7 +81,7 @@
           "depth": 4.914863739013672,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Expedition.glb"
+            "href": "app/assets/models/Ford_Expedition.glb"
           }
         }
       ]
@@ -97,7 +97,7 @@
           "depth": 5.950264587402344,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_F-150.glb"
+            "href": "app/assets/models/Ford_F-150.glb"
           }
         }
       ]
@@ -113,7 +113,7 @@
           "depth": 4.461966552734376,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Fiesta.glb"
+            "href": "app/assets/models/Ford_Fiesta.glb"
           }
         }
       ]
@@ -129,7 +129,7 @@
           "depth": 4.418487548828125,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Focus_Hatchback.glb"
+            "href": "app/assets/models/Ford_Focus_Hatchback.glb"
           }
         }
       ]
@@ -145,7 +145,7 @@
           "depth": 4.993350219726562,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Fusion.glb"
+            "href": "app/assets/models/Ford_Fusion.glb"
           }
         }
       ]
@@ -161,7 +161,7 @@
           "depth": 4.744812927246095,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Mustang.glb"
+            "href": "app/assets/models/Ford_Mustang.glb"
           }
         }
       ]
@@ -177,7 +177,7 @@
           "depth": 5.144293212890625,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Taurus.glb"
+            "href": "app/assets/models/Ford_Taurus.glb"
           }
         }
       ]
@@ -193,7 +193,7 @@
           "depth": 4.323059234619141,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Transit_Commercial_Van.glb"
+            "href": "app/assets/models/Ford_Transit_Commercial_Van.glb"
           }
         }
       ]
@@ -209,7 +209,7 @@
           "depth": 4.835228576660157,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Ford_Transit_Connect.glb"
+            "href": "app/assets/models/Ford_Transit_Connect.glb"
           }
         }
       ]
@@ -225,7 +225,7 @@
           "depth": 5.347634582519531,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Mercedes_S-Class.glb"
+            "href": "app/assets/models/Mercedes_S-Class.glb"
           }
         }
       ]
@@ -241,7 +241,7 @@
           "depth": 5.06810791015625,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Porsche_Boxter.glb"
+            "href": "app/assets/models/Porsche_Boxter.glb"
           }
         }
       ]
@@ -257,7 +257,7 @@
           "depth": 4.746471862792969,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Porsche_Carrera.glb"
+            "href": "app/assets/models/Porsche_Carrera.glb"
           }
         }
       ]
@@ -273,7 +273,7 @@
           "depth": 5.413741149902344,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Taxi.glb"
+            "href": "app/assets/models/Taxi.glb"
           }
         }
       ]
@@ -289,7 +289,7 @@
           "depth": 4.948473815917969,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Tesla_P7.glb"
+            "href": "app/assets/models/Tesla_P7.glb"
           }
         }
       ]
@@ -305,7 +305,7 @@
           "depth": 4.423426208496094,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Toyota_Prius.glb"
+            "href": "app/assets/models/Toyota_Prius.glb"
           }
         }
       ]
@@ -321,7 +321,7 @@
           "depth": 3.6825686645507814,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Van_Taxi.glb"
+            "href": "app/assets/models/Van_Taxi.glb"
           }
         }
       ]
@@ -337,7 +337,7 @@
           "depth": 4.770531921386719,
           "anchor": "origin",
           "resource": {
-            "href": "app/assets/model/Volkswagen_Jetta_Wagon.glb"
+            "href": "app/assets/models/Volkswagen_Jetta_Wagon.glb"
           }
         }
       ]

@@ -10,6 +10,11 @@ import ObjectSymbol3DLayer = require("esri/symbols/ObjectSymbol3DLayer");
 import MapManager from "app/Managers/MapManager";
 import ConfigManager from "app/Managers/ConfigManager";
 
+interface StageData {
+  stageName: string;
+  modelName: string;
+}
+
 export default class SignalLamp {
   private static instance: SignalLamp;
 
@@ -60,7 +65,18 @@ export default class SignalLamp {
     query.where = "1=1";
     const results: FeatureSet = await queryTask.execute(query);
     results.features.forEach(async (graphic: Graphic) => {
-      graphic.attributes.state = "normal";
+      //处理相位-模型的关系
+      const lampStages: string = graphic.getAttribute("STAGES");
+      const stageArray = lampStages.split("|");
+      const stages: StageData[] = [];
+      stageArray.forEach(stage => {
+        const stageContent = stage.split("-");
+        const stageName = stageContent[0];
+        const modelName = stageContent[1];
+        stages.push({ stageName: stageName, modelName: modelName });
+      });
+      graphic.setAttribute("ParsedStages", stages);
+      graphic.setAttribute("state", "normal");
       this.setSymbol(graphic);
 
       this.signalLampLayer.add(graphic);
@@ -109,49 +125,52 @@ export default class SignalLamp {
         newGraphic.attributes.state = state;
         this.setSymbol(newGraphic);
         this.signalLampLayer.add(newGraphic);
-
       }
     });
   }
 
-  private setSymbol(graphic: Graphic) {
+  private setSymbol(graphic: Graphic, stage: string = "A") {
+    const stages: StageData[] = graphic.getAttribute("ParsedStages");
+    let modelName: string = "0";
+    stages.forEach(stageData => {
+      console.log(stageData);
+      if (stageData.stageName === stage) {
+        modelName = stageData.modelName;
+      }
+    });
+    console.log(modelName);
+
     //根据信号灯类型用不同的symbol
     let symbol: PointSymbol3D = new PointSymbol3D();
     if (graphic.attributes.LAMPAPPCLASS === "4") {
       //行人信号灯
-      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
-        {
-          width: 0.7,
-          height: 10.2,
-          depth: 1.2,
-          heading: graphic.attributes.HEADING,
-          material:
-            graphic.attributes.state === "normal" ? undefined : { color: "red" },
-          resource: {
-            href:
-              this.appConfig.viewerUrl +
-              "/app/assets/model/Traffic_Light_3.glb"
-          }
+      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
+        width: 0.7,
+        height: 10.2,
+        depth: 1.2,
+        heading: graphic.attributes.HEADING,
+        material:
+          graphic.attributes.state === "normal" ? undefined : { color: "red" },
+        resource: {
+          href:
+            this.appConfig.viewerUrl + `/app/assets/models/Traffic_Light_Man_${modelName}.glb`
         }
-      );
+      });
       symbol.symbolLayers.add(objectSymbol3DLayer);
     } else {
       //车行信号灯
-      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer(
-        {
-          width: 0.7,
-          height: 18,
-          depth: 13.58,
-          heading: graphic.attributes.HEADING,
-          material:
-            graphic.attributes.state === "normal" ? undefined : { color: "red" },
-          resource: {
-            href:
-              this.appConfig.viewerUrl +
-              "/app/assets/model/Traffic_Light_2.glb"
-          }
+      const objectSymbol3DLayer: ObjectSymbol3DLayer = new ObjectSymbol3DLayer({
+        width: 0.7,
+        height: 18,
+        depth: 13.58,
+        heading: graphic.attributes.HEADING,
+        material:
+          graphic.attributes.state === "normal" ? undefined : { color: "red" },
+        resource: {
+          href:
+            this.appConfig.viewerUrl + `/app/assets/models/Traffic_Light_Vehicle_${modelName}.glb`
         }
-      );
+      });
       symbol.symbolLayers.add(objectSymbol3DLayer);
     }
     graphic.symbol = symbol;

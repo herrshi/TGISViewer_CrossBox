@@ -142,15 +142,16 @@ define(["require", "exports", "esri/layers/MapImageLayer", "esri/layers/FeatureL
                                     symbolLayers: [
                                         new TextSymbol3DLayer({
                                             material: { color: [85, 255, 0] },
-                                            size: 20,
+                                            size: "18px",
                                             font: new Font({
-                                                weight: "bold"
+                                                weight: "bold",
+                                                family: "微软雅黑"
                                             })
                                         })
                                     ]
                                 }),
                                 labelExpressionInfo: {
-                                    expression: "$feature.stage"
+                                    expression: "$feature.stage + '相位'"
                                 },
                                 labelPlacement: "above-center"
                             });
